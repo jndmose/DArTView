@@ -78,6 +78,27 @@
   return false;
 }
 
+$: sortData = async() => {
+      
+     
+     await fetch('http://127.0.0.1:5000/sort_data',{
+             method: 'GET',
+	 })
+                 .then(response => response.json())
+                 .then(obj => 
+                 {
+                    data=obj;
+                    sampleNumber= data[0].length
+                    
+                  
+                 })
+                 .catch(error => {
+                    hasError= true;
+                    console.log(error);
+                 })                 
+  return false;
+}
+
 	//look at all these beautiful options
 	// Buttons text, set any to "" to remove that button
 	export let buttonText = "Upload";
@@ -213,8 +234,9 @@
   </Navbar>
 <input id="upload" type="file"  on:change={openFile} value=""/>
 {#if sampleNumber > 0 }
-<div>
- <p> Samples : {sampleNumber}</p> <span>Markers : {data.length}</span>
+<div class="controls">
+ <span> Samples : {sampleNumber}</span> &nbsp; <span>Markers : {data.length}</span> &nbsp;
+ <button on:click={sortData}> Sort Data</button>
  </div>
  
 {/if}
@@ -294,10 +316,8 @@ Oops, error occured
 <style>
 	
 	.container {
-		/* border-top: 1px solid #333; */
       width: 100%;
 		padding: 20px;
-		/* border-bottom: 1px solid #333; */
 		min-height: 200px;
 		height: calc(100vh - 15em);
       max-width: 1850px;
@@ -305,6 +325,12 @@ Oops, error occured
 	}
    #upload{
     display:none
+}
+
+.controls{
+   background-color: #bebebe;
+   max-height: 80px;
+   display: flex;
 }
 
 img{
@@ -319,15 +345,15 @@ img{
  
 
    .allele0{
-      background-color: chartreuse;
+      background-color: #3498db;
    }
 
    .allele1{
-      background-color: cyan;
+      background-color: #2ecc71;
    }
 
    .allele2{
-      background-color: rgb(245, 41, 41);
+      background-color: #e74c3c;
    }
 
    .allele-{
@@ -346,7 +372,7 @@ img{
       justify-content: center;
       border-radius: 1px;
       font-size: 13px;
-      display: inline-flex;
+      display: flex;
 
 
    }

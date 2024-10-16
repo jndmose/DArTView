@@ -181,7 +181,7 @@ def upload_file():
 @app.route('/sort_data')
 def display_data():
 
-    data = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "Report_DAma24-3045_1_moreOrders_SNP_mapping_2.csv"), dtype=str, header=None)
+    data = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "sort-data.csv"), dtype=str, header=None)
     #Get first column
     first_column = data.iloc[:,0]         
     sample_meta_row =0
