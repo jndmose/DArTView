@@ -104,7 +104,7 @@ $: sortData = async() => {
 	export let buttonText = "Upload";
 	export let doneButtonText = "Done";
 	export let doneText = "Successfully uploaded"
-	export let descriptionText = "Drag or click to upload";
+	export let descriptionText = "No Marker Data Loaded, Drag or click to upload";
 	// The file upload input element
 	export let input = null;
 	//Fixed uploader position?
@@ -206,6 +206,7 @@ $: sortData = async() => {
 	
 </script>
 <Styles />
+<div class='dartView'>
 <Navbar color="light" light expand="md">
 	<NavbarBrand >
        <img src="/images/snp-24.png" alt="DArTView" />
@@ -237,6 +238,7 @@ $: sortData = async() => {
 <div class="controls">
  <span> Samples : {sampleNumber}</span> &nbsp; <span>Markers : {data.length}</span> &nbsp;
  <button on:click={sortData}> Sort Data</button>
+ 
  </div>
  
 {/if}
@@ -264,10 +266,10 @@ Oops, error occured
    </VirtualList>
    {/if}
 
-   {#if sampleNumber > 0 }
+   {#if sampleNumber === 0 }
 
-   <p>Showing {start}-{end} of {data.length} Markers</p>
-   {:else}
+   
+   
    <div bind:this={dragZone} on:dragover={dragover} on:drop={drop} on:dragenter={dragenter} on:dragleave={dragleave} class={`${fixed ? 'fixed' : ''} fileUploader dragzone`}>
       {#if files.length !== maxFiles}
         {#if listFiles}
@@ -312,25 +314,34 @@ Oops, error occured
 </div>
 {/if}
 
+</div>
+{#if sampleNumber > 0}
 
+<div class="footer"><p>Showing {start}-{end} of {data.length} Markers</p></div>
+	
+{/if}
 <style>
 	
 	.container {
       width: 100%;
-		padding: 20px;
-		min-height: 200px;
-		height: calc(100vh - 15em);
+	  padding: 20px;
+	  min-height: 200px;
+	  height: calc(100vh - 15em);
       max-width: 1850px;
      
 	}
    #upload{
     display:none
 }
+.dartView{
+	border: 1px solid black;
+	background: #dcdcdc;
+}
 
 .controls{
-   background-color: #bebebe;
-   max-height: 80px;
-   display: flex;
+   height: 80px;
+   margin-bottom: 10px;
+   margin-top: 5px;
 }
 
 img{
@@ -375,6 +386,10 @@ img{
       display: flex;
 
 
+   }
+   .footer{
+	margin-bottom: 5px;
+	margin-top: 5px;
    }
 
    .dragzone {
@@ -459,7 +474,7 @@ img{
 	}
 	.dragzone.fixed {
 		position: fixed;
-		height: 80vh;
+		height: 60vh;
 		width: 80vw;
 		top: 50%;
 		left: 50%;
