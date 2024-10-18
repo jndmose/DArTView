@@ -164,6 +164,17 @@
 
    }
 
+   let styles = {
+		'allele2': '#e74c3c',
+		'allele1': '#2ecc71',
+		'allele0': '#3498db',
+      'allele-': '#f0f8ff'
+	};
+
+   $: cssVarStyles = Object.entries(styles)
+		.map(([key, value]) => `--${key}:${value}`)
+		.join(';');
+
 
 </script>
 <Styles />
@@ -199,9 +210,25 @@
 <div class="controls">
  <span> Samples : {sampleNumber}</span> &nbsp; <span>Markers : {data.length}</span> &nbsp;
  <button class="top-buttons" on:click={sortData}> Sort Data</button>
- <label for="homo">Homozygote Ref</label><br>
- <input type="color" id="favcolor" name="favcolor" value="#ff0000">
- 
+ <label>
+   <input style="padding:0" type="color" bind:value={styles['allele2']} /> 
+   Hets
+</label>
+
+<label>
+   <input style="padding:0" type="color" bind:value={styles['allele0']} /> 
+   Hom0
+</label>
+
+   <label>
+   <input style="padding:0" type="color" bind:value={styles['allele1']} /> 
+      Hom1
+   </label>
+
+   <label>
+      <input style="padding:0" type="color" bind:value={styles['allele-']} /> 
+         Missing
+      </label>
  </div>
  
 {/if}
@@ -212,7 +239,7 @@ Oops, error occured
 {:else}
 
 
-<div class='container'>
+<div id='geno-map'  style="{cssVarStyles}">
    
    {#if sampleNumber > 0}
    <VirtualList  items= {data} bind:start bind:end let:item>
@@ -282,7 +309,7 @@ Oops, error occured
 {/if}
 <style>
 	
-	.container {
+	#geno-map {
       width: 100%;
 	  padding: 20px;
 	  min-height: 200px;
@@ -318,19 +345,20 @@ img{
  
 
    .allele0{
-      background-color: #3498db;
+      background-color: var(--allele0, #3498db);
    }
 
    .allele1{
-      background-color: #2ecc71;
+      background-color: var(--allele1,#2ecc71);
    }
 
    .allele2{
-      background-color: #e74c3c;
+      background-color: var(--allele2,#e74c3c);
    }
 
    .allele-{
-      background-color: aliceblue;
+      background-color: var(--allele-,aliceblue);
+
    }
    .alleleid{
       display: block;
