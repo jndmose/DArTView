@@ -21,32 +21,22 @@
   import DragDrop from './DragDrop.svelte';
   import ListDisplay from './ListDisplay.svelte';
 	
-	
-	
   let isOpen = false;
+  let hasError = false;
   
 
   function handleUpdate(event) {
     isOpen = event.detail.isOpen;
   }
      let data=[];
-     let  sampleNumber=0;
-    let hasError=false;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
 
-    let start;
-    let end;
-
-  
-
-   
-   async function openFile(fl){ 
+   async function openFile(fl){
+	hasError= false; 
 	data = await controller.openFile(fl);
-	
-	sampleNumber = data[0].length;
+	if(data instanceof Error){
+		hasError= true;
+	}
    }
-
 
    $: runUpload =  () => {
       
@@ -91,7 +81,7 @@
 
 
 {#if hasError}
-Oops, error occured
+<p>Oops, error occured. Check you have a proper DArT Marker file and upload again </p>
 {:else}
 
    {#if data.length > 0}
@@ -107,8 +97,7 @@ Oops, error occured
 
 </div>
 <style>
-	
-	
+
    #upload{
     display:none
 }
@@ -118,15 +107,8 @@ Oops, error occured
 	height: -webkit-fill-available;
 	
 }
-
-
 img{
    max-height: 50px;
-}
-  
-
-
-  
-   
+}  
 	
 </style>

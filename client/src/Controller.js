@@ -12,23 +12,25 @@ export default class Controller{
          }
           const formData = new FormData();
           formData.append('file', file)
-        
-        let hasError = false;
-     await fetch('http://127.0.0.1:5000/upload_file',{
+      try{
+     
+       const response= await fetch('http://127.0.0.1:5000/upload_file',{
                method: 'POST',
                body: formData
-       })
-                   .then(response => response.json())
-                   .then(obj => 
-                   {
-                     console.log(obj);
-                     data=obj;
+                    });
+                    if(!response.ok){
+                      return new Error(`Response status: ${response.status}`);
+                    }
                       
-                    
-                   });
-                   return data;
+                   const json = await response.json();
+                   return json;
                                
+  }  catch(error){
+    console.error(error.message);
+    return error;
   }
+
+     }
   
   async sortData () {
         

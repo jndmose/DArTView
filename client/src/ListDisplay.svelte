@@ -20,8 +20,6 @@ let styles = {
     async function sortData() {
 	geno_data = await controller.sortData();
 	
-		sampleNumber= data[0].length;
-	
    }
 
 

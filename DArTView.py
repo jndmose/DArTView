@@ -73,6 +73,7 @@ def upload_file():
             #print("sample meta row is", first_column.iloc[sample_meta_row+2:20])
             # Use Marker id column to check the report type
             dart_report_format = check_report_format(first_column.iloc[sample_meta_row+2:20])
+            
             #print("dart report format is", dart_report_format)
             
            #subset with sample meta data
@@ -119,7 +120,7 @@ def upload_file():
             marker_column = data.iloc[:,0]
             
             
-            report_Mcall_rate= data.CallRate .apply(lambda x: float(x))
+            #report_Mcall_rate= data.CallRate .apply(lambda x: float(x))
             #print("report call rate values are",report_Mcall_rate )
             #if 1==1:
             #genotypic_data.style.pipe(make_pretty)
@@ -146,29 +147,29 @@ def upload_file():
                  
             
 
-            calculated_Mcall_rate= genotypic_data.apply("count", axis=1)
-            calculated_Scall_rate = genotypic_data.apply("count", axis=0)
+            # calculated_Mcall_rate= genotypic_data.apply("count", axis=1)
+            # calculated_Scall_rate = genotypic_data.apply("count", axis=0)
 
-            calculated_Mcall_rate= calculated_Mcall_rate.apply(lambda x: x/samples_number)
+            # calculated_Mcall_rate= calculated_Mcall_rate.apply(lambda x: x/samples_number)
 
-            calculated_Scall_rate = calculated_Scall_rate.apply(lambda x: x/markers_number)
+            # calculated_Scall_rate = calculated_Scall_rate.apply(lambda x: x/markers_number)
             #print(report_Mcall_rate)
             #return render_template('basic_table.html', row_data=list(report_Mcall_rate.values.tolist()))
             #return  genotypic_data.to_json(orient='records')
             #return redirect(url_for('display_data'))
 
-            MAF= calculate_maf(genotypic_data, samples_number)
+            #MAF= calculate_maf(genotypic_data, samples_number)
 
             #genotypic_data.to_csv(path_or_buf=os.path.join("/home/moses/flask/flask-tables/templates", "genoptype.csv"),na_rep="-", index=False)
             #return render_template('genotypic_table.html')
             
 
-            df = pd.DataFrame({
-                "metadata_name": ["Report CallRate", "Calculated CallRate","MAFF"],
-                "min": [np.min(report_Mcall_rate), np.min(calculated_Mcall_rate), np.min(MAF)],
-                "mean": [np.mean(report_Mcall_rate), np.mean(calculated_Mcall_rate), np.mean(MAF)],
-                "max": [np.max(report_Mcall_rate), np.max(calculated_Mcall_rate), np.max(MAF)]
-            }, index=["row0","row1", "row1"])
+            # df = pd.DataFrame({
+            #     "metadata_name": ["Report CallRate", "Calculated CallRate","MAFF"],
+            #     "min": [np.min(report_Mcall_rate), np.min(calculated_Mcall_rate), np.min(MAF)],
+            #     "mean": [np.mean(report_Mcall_rate), np.mean(calculated_Mcall_rate), np.mean(MAF)],
+            #     "max": [np.max(report_Mcall_rate), np.max(calculated_Mcall_rate), np.max(MAF)]
+            # }, index=["row0","row1", "row1"])
 
            
             #return render_template("basic_table.html",row_data=list(df.values.tolist()))
