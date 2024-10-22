@@ -1,10 +1,14 @@
 <script>
 import VirtualList from './VirtualList.svelte';
 import Controller from './Controller.js';
+import Zoom from './Zoom.svelte';
 let start;
 let end;
 export let geno_data = [];
 const controller = new Controller();
+let zoomin = true;
+let zoomout= false;
+let selected = "zoomin"
 
 let styles = {
 		'allele2': '#e74c3c',
@@ -20,6 +24,24 @@ let styles = {
     async function sortData() {
 	geno_data = await controller.sortData();
 	
+   }
+
+   function zoom(){
+
+    selected = event.currentTarget.value;
+    console.log("selected is", selected)
+    if(selected==="zoomin"){
+        zoomin=true;
+        zoomout= false
+    }
+    else{
+        zoomin= false;
+        zoomout=true;
+    }
+
+    console.log("zoomin is ", zoomin ,"Zoom out is", zoomout)
+    
+
    }
 
 
@@ -48,7 +70,18 @@ let styles = {
 		 <input style="padding:0" type="color" bind:value={styles['allele-']} /> 
 			Missing
 		 </label>
+
+         <label>
+            <input checked={selected==="zoomout"} type="radio" on:change={zoom} name="zoom" value="zoomout" /> Zoom Out
+        </label>
+        <label>
+            <input checked={selected==="zoomin"} type="radio" on:change={zoom} name="zoom" value="zoomin" /> Zoom In
+        </label>
 	</div>
+
+{#if zoomout}
+    <Zoom />
+{:else}
 
 <VirtualList  items= {geno_data} bind:start bind:end let:item>
     <div class="row-data">
@@ -60,9 +93,12 @@ let styles = {
    </div>
    
    </VirtualList>
-   </div>
+   {/if}
+   
+    </div>
 
    <div class="footer"><p>Showing {start}-{end} of {geno_data.length} Markers</p></div>
+   
 
    <style>
 
