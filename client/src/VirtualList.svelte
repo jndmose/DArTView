@@ -138,6 +138,7 @@
 		overflow-y: auto;
 		-webkit-overflow-scrolling:touch;
 		display: block;
+		
 	}
 
 	svelte-virtual-list-contents, svelte-virtual-list-row {
