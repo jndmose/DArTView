@@ -14,7 +14,7 @@ let styles = {
 		'allele2': '#e74c3c',
 		'allele1': '#2ecc71',
 		'allele0': '#3498db',
-         'allele-': '#f0f8ff'
+      'allele-': '#f0f8ff'
 	};
 
    $: cssVarStyles = Object.entries(styles)
@@ -38,8 +38,6 @@ let styles = {
         zoomin= false;
         zoomout=true;
     }
-
-    console.log("zoomin is ", zoomin ,"Zoom out is", zoomout)
     
 
    }
@@ -80,7 +78,7 @@ let styles = {
 	</div>
 
 {#if zoomout}
-    <Zoom />
+    <Zoom  cssVarStyles= {cssVarStyles} data = {geno_data}/>
 {:else}
 
 <VirtualList  items= {geno_data} bind:start bind:end let:item>
@@ -187,6 +185,12 @@ let styles = {
    height: 80px;
    margin-bottom: 10px;
    margin-top: 5px;
+}
+
+input[type="radio"] {
+  -ms-transform: scale(1.5); /* IE 9 */
+  -webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+  transform: scale(1.5);
 }
 
    </style>
