@@ -2,54 +2,55 @@
   import { onMount } from "svelte";
 export let data = [];
 export let cssVarStyles;
+const height=window.innerHeight;
+const width =  window.innerWidth;
   
     onMount(() => {
-      function draw() {
-        
-        let count=0;
-        let cnt =0;
+   
         const markers = data.length;
         const samples = data[0].length;
+        console.log(height,width)
+        
   
         const canvas = document.getElementById("canvas");
-        const markerScoreColors = cssVarStyles.split(";")
-        
+        const markerScoreColors = cssVarStyles.split(";");
 
         if (canvas.getContext) {
           const ctx = canvas.getContext("2d");
          
           for( let j =0 ; j< markers;j++){
             for(let i=0; i< samples; i++){
+              
             
-            if(data[i][j]==="0"){
+            if(data[j][i]==="0"){
+              
                ctx.fillStyle= markerScoreColors[2].split(":")[1];
-               ctx.fillRect(i+5, j+2, 5, 2);
+        
             }
-            else if(data[i][j]==="1"){
+            else if(data[j][i]==="1"){
             ctx.fillStyle= markerScoreColors[1].split(":")[1];
-            ctx.fillRect(i+5, j+2, 5, 2);
 
             }
-            else if(data[i][j]==="2"){
+            else if(data[j][i]==="2"){
              ctx.fillStyle= markerScoreColors[0].split(":")[1];
-             ctx.fillRect(i+5, j+2, 5, 2);
+
             }
 
-            else if(data[i][j]==="-"){
+            else {
                ctx.fillStyle= markerScoreColors[3].split(":")[1];
-               ctx.fillRect(i+5, j+2, 5, 2);
+
             }
-         
-          
+
+            ctx.fillRect(i*2, j*2, 2, 2);
 
           }
         }
-          
-          
+
         }
-      }
-      draw();
+
+      
     });
+
     </script>
-     <canvas id="canvas" width="1000" height="1000"></canvas>
+     <canvas id="canvas" width={width} height={height}></canvas>
   
