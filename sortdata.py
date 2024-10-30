@@ -1,15 +1,15 @@
-from flask import Flask, json, Blueprint
+from flask import json, Blueprint
 DART_HEADERS ='*'
 import pandas as pd
 import numpy as np
 import os
-app = Flask(__name__)
-bp = Blueprint("sort", __name__, url_prefix="/sort")
+UPLOAD_FOLDER = "/home/moses/flask"
+bp = Blueprint("sortdata", __name__)
 
-@app.route('/sort_data')
+@bp.route('/sort_data')
 def display_data():
 
-    data = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "sort-data.csv"), dtype=str, header=None)
+    data = pd.read_csv(os.path.join(UPLOAD_FOLDER, "sort-data.csv"), dtype=str, header=None)
     #Get first column
     first_column = data.iloc[:,0]         
     sample_meta_row =0
