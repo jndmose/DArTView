@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
-from flask import Blueprint, Flask, jsonify, flash, request,redirect, send_from_directory, json
-from flask import Flask, session
-from flask_session import Session
+from flask import Blueprint, Flask, jsonify, flash, request,redirect, send_from_directory, json, session
 import os
 from werkzeug.utils import secure_filename
 from .report_format import DarTReportFormat
@@ -51,6 +49,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             
             filename = secure_filename(file.filename)
+            session['filename'] = filename
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             data = pd.read_csv(os.path.join(UPLOAD_FOLDER, filename), dtype=str, header=None)
             #Get first column
@@ -142,7 +141,10 @@ def upload_file():
             
 
             # calculated_Mcall_rate= genotypic_data.apply("count", axis=1)
-            # calculated_Scall_rate = genotypic_data.apply("count", axis=0)
+            # genotypic_data_nan= genotypic_data.replace(["-"], np.nan)
+            # print(genotypic_data.T)
+            # calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
+           # print(calculated_Scall_rate)
 
             # calculated_Mcall_rate= calculated_Mcall_rate.apply(lambda x: x/samples_number)
 
@@ -167,7 +169,6 @@ def upload_file():
 
            
             #return render_template("basic_table.html",row_data=list(df.values.tolist()))
-            print(genotypic_data.to_numpy())
             data =  json.dumps(genotypic_data.to_numpy().tolist())
             return data
           

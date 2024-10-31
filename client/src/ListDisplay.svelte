@@ -91,11 +91,12 @@ let styles = {
    </div>
    
    </VirtualList>
+   <div class="footer"><p>Showing {start}-{end} of {geno_data.length} Markers</p></div>
    {/if}
    
     </div>
 
-   <div class="footer"><p>Showing {start}-{end} of {geno_data.length} Markers</p></div>
+   
    
 
    <style>

@@ -2,13 +2,16 @@
   import { onMount } from "svelte";
 export let data = [];
 export let cssVarStyles;
-const height=window.innerHeight;
 const width =  window.innerWidth;
+
+
+const markers = data.length;
+  const samples = data[0].length;
+  const height=markers/2 + "px";
   
     onMount(() => {
    
-        const markers = data.length;
-        const samples = data[0].length;
+        
         console.log(height,width)
         
   
@@ -52,5 +55,15 @@ const width =  window.innerWidth;
     });
 
     </script>
+    <div class="zoom-div" >
      <canvas id="canvas" width={width} height={height}></canvas>
+</div>
+
+<style>
+.zoom-div{
+	  padding: 20px;
+	  height: calc(105vh - 15em);
+      overflow-y: scroll;
+}
+</style>
   
