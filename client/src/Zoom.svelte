@@ -2,12 +2,14 @@
   import { onMount } from "svelte";
 export let data = [];
 export let cssVarStyles;
-const width =  window.innerWidth;
+
 
 
 const markers = data.length;
-  const samples = data[0].length;
-  const height=markers/2 + "px";
+
+const samples = data[0].length;
+const width =  samples * 2 + "px";
+const height=markers*2 + "px";
   
     onMount(() => {
    

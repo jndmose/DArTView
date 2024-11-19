@@ -2,6 +2,10 @@
 import VirtualList from './VirtualList.svelte';
 import Controller from './Controller.js';
 import Zoom from './Zoom.svelte';
+import { writable } from 'svelte/store';
+import Modal, { bind } from 'svelte-simple-modal';
+import Sort from './Sort.svelte';
+  
 let start;
 let end;
 export let geno_data = [];
@@ -21,10 +25,10 @@ let styles = {
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
 
-    async function sortData() {
-	geno_data = await controller.sortData();
+   //  async function sortData() {
+	// geno_data = await controller.sortData();
 	
-   }
+   // }
 
    function zoom(){
 
@@ -39,8 +43,11 @@ let styles = {
         zoomout=true;
     }
     
-
    }
+
+  
+   const modal = writable(null);
+  const sortData = () => modal.set(bind(Sort, { data: geno_data }));
 
 
 </script>
@@ -48,9 +55,12 @@ let styles = {
 
 <div class="controls">
 	<span> Samples : {geno_data[0].length}</span> &nbsp; <span>Markers : {geno_data.length}</span> &nbsp;
-	<button class="top-buttons" on:click={sortData} > Sort Data</button>
+	<!-- <button class="top-buttons" on:click={sortData} > Sort Data</button> -->
+   <Modal show={$modal}>
+      <button on:click={sortData}>Sort Data</button>
+    </Modal>
 	<label>
-	  <input style="padding:0" type="color" bind:value={styles['allele2']} /> 
+	  <input style="padding:0" type="color" bind:value={styles['allele2']} />
 	  Hets
    </label>
    
@@ -75,6 +85,8 @@ let styles = {
         <label>
             <input checked={selected==="zoomin"} type="radio" on:change={zoom} name="zoom" value="zoomin" /> Zoom In
         </label>
+
+       
 	</div>
 
 {#if zoomout}

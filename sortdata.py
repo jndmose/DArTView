@@ -52,7 +52,7 @@ def display_data():
     calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
     data_with_headers["MarkerCallRate"]= calculated_Mcall_rate
      
-    sorted_data= data_with_headers.sort_values(by="MarkerCallRate", ascending=False,kind='mergesort' )
+    sorted_data= data_with_headers.sort_values(by="MarkerCallRate", ascending=True,kind='mergesort' )
 
     sorted_data= sorted_data.drop(['MarkerCallRate'], axis=1)
  
@@ -66,7 +66,7 @@ def display_data():
     genotypic_data_T[len(genotypic_data_T.columns)]=calculated_Scall_rate
     genotypic_data_T.rename(columns={genotypic_data_T.columns[len(genotypic_data_T.columns)-1]:"SampleCallRate"}, inplace=True)
     
-    sorted_data_T = genotypic_data_T.sort_values(by="SampleCallRate", ascending=False, kind="mergesort")
+    sorted_data_T = genotypic_data_T.sort_values(by="SampleCallRate", ascending=True, kind="mergesort")
     
     sorted_data_T= sorted_data_T.drop(['SampleCallRate'], axis=1)
 

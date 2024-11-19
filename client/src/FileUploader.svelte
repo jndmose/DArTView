@@ -1,5 +1,5 @@
 <script>
-	
+		
 	import {
     Collapse,
     Navbar,
@@ -53,7 +53,7 @@
 <div class='dartView'>
 <Navbar color="light" light expand="md">
 	<NavbarBrand >
-       <img src="/images/snp-24.png" alt="DArTView" />
+       <img src="/images/snp-24.png" alt="DArTView logo" />
    </NavbarBrand>
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
 	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
