@@ -32,11 +32,15 @@ export default class Controller{
 
      }
   
-  async sortData () {
-        
+  async sortData (metadata, sort_order) {
+    let post_data = {"metadata":metadata, "sortorder": sort_order}        
        let data;
        await fetch('http://127.0.0.1:5000/sort_data',{
-               method: 'GET',
+               method: 'POST',
+               headers:{
+                'Content-Type': 'application/json',
+               },
+               body: JSON.stringify(post_data),
        })
                    .then(response => response.json())
                    .then(obj => 

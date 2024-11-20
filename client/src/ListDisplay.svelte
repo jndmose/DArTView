@@ -2,13 +2,13 @@
 import VirtualList from './VirtualList.svelte';
 import Controller from './Controller.js';
 import Zoom from './Zoom.svelte';
-import { writable } from 'svelte/store';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
+import {geno_data, modal} from './data.js';
   
 let start;
 let end;
-export let geno_data = [];
+
 const controller = new Controller();
 let zoomin = true;
 let zoomout= false;
@@ -25,10 +25,7 @@ let styles = {
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
 
-   //  async function sortData() {
-	// geno_data = await controller.sortData();
-	
-   // }
+     let mtdata = ["CallRate", "OneRatioRef","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
 
    function zoom(){
 
@@ -46,15 +43,14 @@ let styles = {
    }
 
   
-   const modal = writable(null);
-  const sortData = () => modal.set(bind(Sort, { data: geno_data }));
+  const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));
 
 
 </script>
 <div id='geno-map'  style="{cssVarStyles}">
 
 <div class="controls">
-	<span> Samples : {geno_data[0].length}</span> &nbsp; <span>Markers : {geno_data.length}</span> &nbsp;
+	<span> Samples : {$geno_data[0].length}</span> &nbsp; <span>Markers : {$geno_data.length}</span> &nbsp;
 	<!-- <button class="top-buttons" on:click={sortData} > Sort Data</button> -->
    <Modal show={$modal}>
       <button on:click={sortData}>Sort Data</button>
@@ -90,10 +86,10 @@ let styles = {
 	</div>
 
 {#if zoomout}
-    <Zoom  cssVarStyles= {cssVarStyles} data = {geno_data}/>
+    <Zoom  cssVarStyles= {cssVarStyles} data = {$geno_data}/>
 {:else}
 
-<VirtualList  items= {geno_data} bind:start bind:end let:item>
+<VirtualList  items= {$geno_data} bind:start bind:end let:item>
     <div class="row-data">
      {#each item as score}
       <span  class="allele{score} data">{score}</span>
@@ -103,7 +99,7 @@ let styles = {
    </div>
    
    </VirtualList>
-   <div class="footer"><p>Showing {start}-{end} of {geno_data.length} Markers</p></div>
+   <div class="footer"><p>Showing {start}-{end} of {$geno_data.length} Markers</p></div>
    {/if}
    
     </div>

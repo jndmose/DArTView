@@ -14,6 +14,7 @@
     DropdownItem
   } from 'sveltestrap';
 	import Controller from './Controller.js';
+  import {geno_data} from './data.js';
    const controller = new Controller();
 
    import { Styles } from 'sveltestrap';
@@ -28,12 +29,12 @@
   function handleUpdate(event) {
     isOpen = event.detail.isOpen;
   }
-     let data=[];
+     
 
-   async function openFile(fl){
+  async function loadFile(fl){
 	hasError= false; 
-	data = await controller.openFile(fl);
-	if(data instanceof Error){
+	$geno_data = await controller.openFile(fl);
+	if($geno_data instanceof Error){
 		hasError= true;
 	}
    }
@@ -77,15 +78,15 @@
 	  </Nav>
 	</Collapse>
   </Navbar>
-<input id="upload" type="file"  on:change={openFile} value=""/>
+<input id="upload" type="file"  on:change={loadFile} value=""/>
 
 
 {#if hasError}
 <p>Oops, error occured. Check you have a proper DArT Marker file and upload again </p>
 {:else}
 
-   {#if data.length > 0}
-   <ListDisplay geno_data={data} />
+   {#if $geno_data.length > 0}
+   <ListDisplay />
    
    {:else }
    <DragDrop />

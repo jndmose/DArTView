@@ -1,13 +1,14 @@
 <script>
   import { onMount } from "svelte";
-export let data = [];
+  import {geno_data} from './data.js';
+
 export let cssVarStyles;
 
 
 
-const markers = data.length;
+const markers = $geno_data.length;
 
-const samples = data[0].length;
+const samples = $geno_data[0].length;
 const width =  samples * 2 + "px";
 const height=markers*2 + "px";
   
@@ -27,16 +28,16 @@ const height=markers*2 + "px";
             for(let i=0; i< samples; i++){
               
             
-            if(data[j][i]==="0"){
+            if($geno_data[j][i]==="0"){
               
                ctx.fillStyle= markerScoreColors[2].split(":")[1];
         
             }
-            else if(data[j][i]==="1"){
+            else if($geno_data[j][i]==="1"){
             ctx.fillStyle= markerScoreColors[1].split(":")[1];
 
             }
-            else if(data[j][i]==="2"){
+            else if($geno_data[j][i]==="2"){
              ctx.fillStyle= markerScoreColors[0].split(":")[1];
 
             }
