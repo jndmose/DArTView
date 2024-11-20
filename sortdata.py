@@ -1,4 +1,4 @@
-from flask import json, Blueprint, session
+from flask import json, Blueprint, session, request
 DART_HEADERS ='*'
 import pandas as pd
 import numpy as np
@@ -6,8 +6,12 @@ import os
 UPLOAD_FOLDER = "/home/moses/flask"
 bp = Blueprint("sortdata", __name__)
 
-@bp.route('/sort_data')
+@bp.route('/sort_data',  methods=['GET', 'POST'])
 def display_data():
+    sort_criteria = request.json["sortorder"]
+    print(sort_criteria)
+    
+    print("sorting fish")
 
     data = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), dtype=str, header=None)
     #Get first column
@@ -22,8 +26,6 @@ def display_data():
     sample_df= data.iloc[:sample_meta_row+1]
     data_with_headers= data.iloc[sample_meta_row:]
     
-    
-   
     first_row = sample_df.iloc[0]
             
     sample_meta_list = []
@@ -52,7 +54,7 @@ def display_data():
     calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
     data_with_headers["MarkerCallRate"]= calculated_Mcall_rate
      
-    sorted_data= data_with_headers.sort_values(by="MarkerCallRate", ascending=True,kind='mergesort' )
+    sorted_data= data_with_headers.sort_values(by="MarkerCallRate", ascending=sort_criteria=='Ascending',kind='mergesort' )
 
     sorted_data= sorted_data.drop(['MarkerCallRate'], axis=1)
  

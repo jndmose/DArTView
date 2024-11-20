@@ -20,9 +20,15 @@ def allowed_file(filename):
     return '.' in filename and \
     filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@bp.route('/')
+@bp.route('/', methods=['GET', 'POST'])
 def load_file():
-    return send_from_directory('client/public', 'index.html')
+    if request.method=='GET':
+        print("getting fish")
+        return send_from_directory('client/public', 'index.html')
+    
+    
+        
+    
 
 @bp.route('/base')
 def base():
