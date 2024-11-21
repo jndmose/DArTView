@@ -1,4 +1,6 @@
 from flask import json, Blueprint, session, request
+from itertools import compress
+
 DART_HEADERS ='*'
 import pandas as pd
 import numpy as np
@@ -8,10 +10,7 @@ bp = Blueprint("sortdata", __name__)
 
 @bp.route('/sort_data',  methods=['GET', 'POST'])
 def display_data():
-    sort_criteria = request.json["sortorder"]
-    print(sort_criteria)
-    
-    print("sorting fish")
+
 
     data = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), dtype=str, header=None)
     #Get first column
@@ -52,12 +51,28 @@ def display_data():
     genotypic_data_nan= genotypic_data.replace(["-"], np.nan)
     calculated_Mcall_rate= genotypic_data_nan.apply("count", axis=1)
     calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
+    
     data_with_headers["MarkerCallRate"]= calculated_Mcall_rate
-     
-    sorted_data= data_with_headers.sort_values(by="MarkerCallRate", ascending=sort_criteria=='Ascending',kind='mergesort' )
-
-    sorted_data= sorted_data.drop(['MarkerCallRate'], axis=1)
- 
+    
+    sorted_data= {}
+    sort_criteria = request.json
+    new_dict = {key: val for key, val in sort_criteria.items() if val != "-unsorted-"}
+    if(not new_dict):
+        return
+    
+    if("metadata1" in new_dict):
+        metadata = new_dict["metadata1"]
+        sort_order= new_dict["sortorder1"]
+        sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
+        sorted_data= sorted_data.drop([metadata], axis=1)
+    
+    if("metadata2" in new_dict):
+        metadata = new_dict["metadata2"]
+        sort_order= new_dict["sortorder2"]
+        sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
+        sorted_data= sorted_data.drop([metadata], axis=1)
+        
+        
     genotypic_data= sorted_data.iloc[:, start_genotypic_col:]
     
     genotypic_data_T = genotypic_data.T

@@ -25,7 +25,7 @@ let styles = {
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
 
-     let mtdata = ["CallRate", "OneRatioRef","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
+     let mtdata = ["MarkerCallRate", "OneRatioRef","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
 
    function zoom(){
 
@@ -53,25 +53,25 @@ let styles = {
 	<span> Samples : {$geno_data[0].length}</span> &nbsp; <span>Markers : {$geno_data.length}</span> &nbsp;
 	<!-- <button class="top-buttons" on:click={sortData} > Sort Data</button> -->
    <Modal show={$modal}>
-      <button on:click={sortData}>Sort Data</button>
+      <button  disabled={!zoomin} on:click={sortData}>Sort Data</button>
     </Modal>
 	<label>
-	  <input style="padding:0" type="color" bind:value={styles['allele2']} />
+	  <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele2']} />
 	  Hets
    </label>
    
    <label>
-	  <input style="padding:0" type="color" bind:value={styles['allele0']} /> 
+	  <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele0']} /> 
 	  Hom0
    </label>
    
 	  <label>
-	  <input style="padding:0" type="color" bind:value={styles['allele1']} /> 
+	  <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele1']} /> 
 		 Hom1
 	  </label>
    
 	  <label>
-		 <input style="padding:0" type="color" bind:value={styles['allele-']} /> 
+		 <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele-']} /> 
 			Missing
 		 </label>
 
