@@ -5,7 +5,7 @@ import Zoom from './Zoom.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
 import {geno_data, modal} from './data.js';
-  
+
 let start;
 let end;
 
@@ -55,25 +55,37 @@ let styles = {
    <Modal show={$modal}>
       <button  disabled={!zoomin} on:click={sortData}>Sort Data</button>
     </Modal>
-	<label>
-	  <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele2']} />
-	  Hets
-   </label>
-   
-   <label>
-	  <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele0']} /> 
-	  Hom0
-   </label>
-   
-	  <label>
-	  <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele1']} /> 
-		 Hom1
-	  </label>
-   
-	  <label>
-		 <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele-']} /> 
-			Missing
-		 </label>
+
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        Color Scheme
+      </button>
+      <ul class="dropdown-menu">
+         <label>
+            <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele2']} />
+            Hets
+          </label>
+          
+          <label>
+            <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele0']} /> 
+            Hom0
+          </label>
+          
+            <label>
+            <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele1']} /> 
+              Hom1
+            </label>
+          
+            <label>
+              <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele-']} /> 
+                Missing
+              </label>
+       
+               
+       
+      </ul>
+    </div>
+
 
          <label>
             <input checked={selected==="zoomout"} type="radio" on:change={zoom} name="zoom" value="zoomout" /> Zoom Out
@@ -82,6 +94,8 @@ let styles = {
             <input checked={selected==="zoomin"} type="radio" on:change={zoom} name="zoom" value="zoomin" /> Zoom In
         </label>
 
+        
+        
        
 	</div>
 
@@ -114,6 +128,10 @@ let styles = {
       border-bottom: 1pt solid #bebebe ;
       
       
+   }
+
+   .btn-group{
+      margin: 6px;
    }
  
 

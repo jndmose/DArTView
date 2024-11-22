@@ -62,17 +62,30 @@
 		<Dropdown autoClose="inside">
 			<DropdownToggle nav caret>Import</DropdownToggle>
 			<DropdownMenu end>
-			  <DropdownItem  on:click ={runUpload}  >Import Markers </DropdownItem>
-			  <DropdownItem on:click ={runUpload}>Import Samples</DropdownItem>
+			  <DropdownItem  on:click ={runUpload}>Import Marker Report </DropdownItem>
 			  <DropdownItem divider />
-			  <DropdownItem on:click ={runUpload}>Close</DropdownItem>
+			  <DropdownItem on:click ={runUpload}>Close graphs</DropdownItem>
 			</DropdownMenu>
 		  </Dropdown>
+      <Dropdown autoClose="inside">
+        <DropdownToggle nav caret>Additional Data</DropdownToggle>
+        <DropdownMenu end>
+          <DropdownItem  on:click ={runUpload}>Additional Marker Metadata </DropdownItem>
+          <DropdownItem divider />
+          <DropdownItem on:click ={runUpload}>Additional Sample Metadata</DropdownItem>
+        </DropdownMenu>
+        </Dropdown>
+
+        <Dropdown autoClose="inside">
+          <DropdownToggle nav caret>BrAPI</DropdownToggle>
+          <DropdownMenu end>
+            <DropdownItem  on:click ={runUpload}>Authenticate BrAPI Server </DropdownItem>
+            <DropdownItem divider />
+            <DropdownItem on:click ={runUpload}>Load Via BrAPI_v2 server</DropdownItem>
+          </DropdownMenu>
+          </Dropdown>
 		<NavItem>
-		  <NavLink href="#" on:click={runUpload}>Load</NavLink>
-		</NavItem>
-		<NavItem>
-		  <NavLink href="https://github.com/bestguy/sveltestrap">About</NavLink>
+		  <NavLink href="https://www.kddart.org/help/kdxplore/html/KDXplore-DartView-overview.html" target="_blank">About</NavLink>
 		</NavItem>
 		
 	  </Nav>
