@@ -13,6 +13,8 @@ const controller = new Controller();
 let zoomin = true;
 let zoomout= false;
 let selected = "zoomin"
+let checkedX= false;
+let checkedY = false;
 
 let styles = {
 		'allele2': '#e74c3c',
@@ -44,6 +46,17 @@ let styles = {
 
   
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));
+
+  const handleClickZoom = ((which) => {
+   if(which=='zoomX'){
+      checkedX=!checkedX;
+   }
+   else{
+      checkedY=!checkedY;
+   }
+   
+   
+  })
 
 
 </script>
@@ -93,6 +106,16 @@ let styles = {
         <label>
             <input checked={selected==="zoomin"} type="radio" on:change={zoom} name="zoom" value="zoomin" /> Zoom In
         </label>
+
+        <button style="position:relative; padding-left:26px;" on:click={ () => handleClickZoom('zoomX')}>
+         <input type="checkbox" bind:checked={checkedX} style="position: absolute; top:10px; left: 4px;"> Zoom X-axis
+        </button>
+
+        <button style="position:relative; padding-left:26px;" on:click={() => handleClickZoom('zoomY')}>
+         <input type="checkbox" bind:checked={checkedY} style="position: absolute; top:10px; left: 4px;"> Zoom Y-axis
+        </button>
+
+        
 
         
         
@@ -162,12 +185,13 @@ let styles = {
       min-width: 20px;
       align-items: center;
       justify-content: center;
-      border-radius: 1px;
+      
       font-size: 13px;
       display: flex;
+      
 
    }
-
+ 
    .footer{
 	margin-bottom: 5px;
 	margin-top: 5px;
