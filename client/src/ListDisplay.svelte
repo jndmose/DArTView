@@ -5,16 +5,15 @@ import Zoom from './Zoom.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
 import {geno_data, modal} from './data.js';
+import { onMount } from "svelte";
 
 let start;
 let end;
-
-const controller = new Controller();
-let zoomin = true;
-let zoomout= false;
 let selected = "zoomin"
 let checkedX= false;
 let checkedY = false;
+let canvas;
+let canvas_element;
 
 let styles = {
 		'allele2': '#e74c3c',
@@ -26,6 +25,9 @@ let styles = {
    $: cssVarStyles = Object.entries(styles)
 		.map(([key, value]) => `--${key}:${value}`)
 		.join(';');
+
+
+     
 
      let mtdata = ["MarkerCallRate", "OneRatioRef","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
 
@@ -40,6 +42,9 @@ let styles = {
     else{
         zoomin= false;
         zoomout=true;
+
+        console.log(styles);
+        console.log(cssVarStyles);
     }
     
    }
@@ -50,15 +55,102 @@ let styles = {
   const handleClickZoom = ((which) => {
    if(which=='zoomX'){
       checkedX=!checkedX;
+      handleZoomXaxis();
    }
    else{
       checkedY=!checkedY;
+      handleZoomYaxis();
    }
    
    
   })
 
+  $: data_span = '';
 
+const handleZoomXaxis = (() => {
+   if(!checkedX || !checkedY){
+      canvas_element.style.display='none';
+   }
+    data_span = document.getElementsByClassName("data");
+   console.log(data_span);
+   data_span.innerHTML= "";
+
+})
+
+const handleZoomYaxis = (() => {
+   if(!checkedX || !checkedY){
+      canvas_element.style.display='none';
+   }
+   
+})
+
+const markers = $geno_data.length;
+
+const samples = $geno_data[0].length;
+const width =  samples * 2 + "px";
+const height=markers*2 + "px";
+
+
+
+
+
+onMount(() => {
+   
+ canvas = document.getElementById("canvas");
+ canvas_element = document.getElementById("zoom-div");
+
+});
+
+
+       $: if(checkedX & checkedY){
+
+         console.log(canvas_element);
+         if(canvas_element !=null){
+
+         canvas_element.style.display='block';
+         }
+
+        if (canvas.getContext) {
+          const ctx = canvas.getContext("2d");
+         
+          for( let j =0 ; j< markers;j++){
+            for(let i=0; i< samples; i++){
+              
+            
+            if($geno_data[j][i]==="0"){
+              
+               ctx.fillStyle= styles['allele0'];
+        
+            }
+            else if($geno_data[j][i]==="1"){
+            ctx.fillStyle=styles['allele1']
+
+            }
+            else if($geno_data[j][i]==="2"){
+             ctx.fillStyle= styles['allele2']
+
+            }
+
+            else {
+               ctx.fillStyle= styles['allele-']
+
+            }
+
+            ctx.fillRect(i*2, j*2, 2, 2);
+
+          }
+        }
+
+        }
+      }
+
+    
+
+     
+
+
+      
+   
 </script>
 <div id='geno-map'  style="{cssVarStyles}">
 
@@ -66,7 +158,7 @@ let styles = {
 	<span> Samples : {$geno_data[0].length}</span> &nbsp; <span>Markers : {$geno_data.length}</span> &nbsp;
 	<!-- <button class="top-buttons" on:click={sortData} > Sort Data</button> -->
    <Modal show={$modal}>
-      <button  disabled={!zoomin} on:click={sortData}>Sort Data</button>
+      <button  on:click={sortData}>Sort Data</button>
     </Modal>
 
     <div class="btn-group">
@@ -75,22 +167,22 @@ let styles = {
       </button>
       <ul class="dropdown-menu">
          <label>
-            <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele2']} />
+            <input  style="padding:0" type="color" bind:value={styles['allele2']} />
             Hets
           </label>
           
           <label>
-            <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele0']} /> 
+            <input  style="padding:0" type="color" bind:value={styles['allele0']} /> 
             Hom0
           </label>
           
             <label>
-            <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele1']} /> 
+            <input  style="padding:0" type="color" bind:value={styles['allele1']} /> 
               Hom1
             </label>
           
             <label>
-              <input disabled={!zoomin} style="padding:0" type="color" bind:value={styles['allele-']} /> 
+              <input style="padding:0" type="color" bind:value={styles['allele-']} /> 
                 Missing
               </label>
        
@@ -98,14 +190,6 @@ let styles = {
        
       </ul>
     </div>
-
-
-         <label>
-            <input checked={selected==="zoomout"} type="radio" on:change={zoom} name="zoom" value="zoomout" /> Zoom Out
-        </label>
-        <label>
-            <input checked={selected==="zoomin"} type="radio" on:change={zoom} name="zoom" value="zoomin" /> Zoom In
-        </label>
 
         <button style="position:relative; padding-left:26px;" on:click={ () => handleClickZoom('zoomX')}>
          <input type="checkbox" bind:checked={checkedX} style="position: absolute; top:10px; left: 4px;"> Zoom X-axis
@@ -122,20 +206,41 @@ let styles = {
        
 	</div>
 
-{#if zoomout}
-    <Zoom  cssVarStyles= {cssVarStyles} data = {$geno_data}/>
-{:else}
+  
+<!-- {#if checkedY & checkedX} -->
 
+<div id="zoom-div" style="display: none;" >
+   <canvas id="canvas" width={width} height={height}></canvas>
+</div>
+
+    <!-- <Zoom cssVarStyles= {cssVarStyles} /> -->
+
+    {#if checkedX & !checkedY}
+    <VirtualList  items= {$geno_data} bind:start bind:end let:item>
+      <div class="row-data" style="border-bottom: none;">
+       {#each item as score}
+        <span  class="allele{score} data" style="min-width:2px;"></span>
+        {/each}
+  
+        
+     </div>
+     
+     </VirtualList>
+     <div class="footer"><p>Showing {start}-{end} of {$geno_data.length} Markers</p></div>
+     {/if}
+     
+{#if !checkedX & !checkedY }
 <VirtualList  items= {$geno_data} bind:start bind:end let:item>
     <div class="row-data">
      {#each item as score}
       <span  class="allele{score} data">{score}</span>
-      {/each}
+      {/each};
 
       
    </div>
    
    </VirtualList>
+   
    <div class="footer"><p>Showing {start}-{end} of {$geno_data.length} Markers</p></div>
    {/if}
    
@@ -182,10 +287,9 @@ let styles = {
       font-family: 'Source Code Pro', monospace;
       text-align: center;
       min-height: 20px;
-      min-width: 20px;
       align-items: center;
       justify-content: center;
-      
+      min-width: 20px;
       font-size: 13px;
       display: flex;
       
@@ -224,7 +328,10 @@ let styles = {
 
    #geno-map {
       width: 100%;
-	  padding: 20px;
+	  padding-left: 40px;
+     padding-right: 20px;
+     padding-top: 20px;
+     padding-bottom: 20px;
 	  height: calc(105vh - 15em);
       max-width: 1850px;
       display: inline-block;
@@ -237,11 +344,10 @@ let styles = {
    margin-bottom: 10px;
    margin-top: 5px;
 }
-
-input[type="radio"] {
-  -ms-transform: scale(1.5); /* IE 9 */
-  -webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
-  transform: scale(1.5);
+#zoom-div{
+	  padding: 20px;
+	  height: calc(105vh - 15em);
+      overflow-y: scroll;
 }
 
    </style>

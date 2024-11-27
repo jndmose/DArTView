@@ -8,3 +8,4 @@ export let selected2= writable('-unsorted-');
 export let sort_order2=writable('Ascending');
 export let selected3= writable('-unsorted-');
 export let sort_order3=writable('Ascending');
+export let cssVarStyles = writable([]);
