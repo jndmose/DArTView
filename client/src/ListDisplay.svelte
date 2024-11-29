@@ -31,24 +31,6 @@ let styles = {
 
      let mtdata = ["MarkerCallRate", "OneRatioRef","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
 
-   function zoom(){
-
-    selected = event.currentTarget.value;
-    console.log("selected is", selected)
-    if(selected==="zoomin"){
-        zoomin=true;
-        zoomout= false
-    }
-    else{
-        zoomin= false;
-        zoomout=true;
-
-        console.log(styles);
-        console.log(cssVarStyles);
-    }
-    
-   }
-
   
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));
 
@@ -64,8 +46,6 @@ let styles = {
    
    
   })
-
-  $: data_span = '';
 
 const handleZoomXaxis = (() => {
    if(!checkedX || !checkedY){
@@ -87,8 +67,7 @@ const handleZoomYaxis = (() => {
 const markers = $geno_data.length;
 
 const samples = $geno_data[0].length;
-const width =  samples * 2 + "px";
-const height=markers*2 + "px";
+const height=markers*2;
 
 
 
@@ -103,6 +82,9 @@ onMount(() => {
 
 
        $: if(checkedX & checkedY){
+         let width =  samples * 2;
+         canvas.width= width;
+         canvas.height= height;
 
          console.log(canvas_element);
          if(canvas_element !=null){
@@ -144,12 +126,51 @@ onMount(() => {
         }
       }
 
-    
+      $: if( checkedY & !checkedX){
+         let width =  samples * 20;
+         canvas.width= width;
+         canvas.height= height;
 
-     
+         console.log(canvas_element);
+         if(canvas_element !=null){
 
+         canvas_element.style.display='block';
+         }
 
-      
+        if (canvas.getContext) {
+          const ctx = canvas.getContext("2d");
+         
+          for( let j =0 ; j< markers;j++){
+            for(let i=0; i< samples; i++){
+              
+            
+            if($geno_data[j][i]==="0"){
+              
+               ctx.fillStyle= styles['allele0'];
+        
+            }
+            else if($geno_data[j][i]==="1"){
+            ctx.fillStyle=styles['allele1']
+
+            }
+            else if($geno_data[j][i]==="2"){
+             ctx.fillStyle= styles['allele2']
+
+            }
+
+            else {
+               ctx.fillStyle= styles['allele-']
+
+            }
+
+            ctx.fillRect(i*20, j*2, 20, 2);
+
+          }
+        }
+
+        }
+      }
+   
    
 </script>
 <div id='geno-map'  style="{cssVarStyles}">
@@ -210,7 +231,7 @@ onMount(() => {
 <!-- {#if checkedY & checkedX} -->
 
 <div id="zoom-div" style="display: none;" >
-   <canvas id="canvas" width={width} height={height}></canvas>
+   <canvas id="canvas"></canvas>
 </div>
 
     <!-- <Zoom cssVarStyles= {cssVarStyles} /> -->
