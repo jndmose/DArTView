@@ -1,7 +1,5 @@
 <script>
 import VirtualList from './VirtualList.svelte';
-import Controller from './Controller.js';
-import Zoom from './Zoom.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
 import {geno_data, modal} from './data.js';
@@ -9,11 +7,11 @@ import { onMount } from "svelte";
 
 let start;
 let end;
-let selected = "zoomin"
 let checkedX= false;
 let checkedY = false;
 let canvas;
 let canvas_element;
+const max_height= '10000';
 
 let styles = {
 		'allele2': '#e74c3c',
@@ -48,26 +46,34 @@ let styles = {
   })
 
 const handleZoomXaxis = (() => {
-   if(!checkedX || !checkedY){
-      canvas_element.style.display='none';
-   }
-    data_span = document.getElementsByClassName("data");
-   console.log(data_span);
-   data_span.innerHTML= "";
+   handleDisplayNone();
 
 })
 
 const handleZoomYaxis = (() => {
+   handleDisplayNone();
+   
+})
+
+const handleDisplayNone = (() => {
    if(!checkedX || !checkedY){
       canvas_element.style.display='none';
    }
-   
+
 })
 
 const markers = $geno_data.length;
 
 const samples = $geno_data[0].length;
+
+//width changes when zoom x is pressed
 const height=markers*2;
+
+const handleLongHeight = (() => {
+   if(height > max_height){
+
+   }
+})
 
 
 
@@ -82,11 +88,11 @@ onMount(() => {
 
 
        $: if(checkedX & checkedY){
+         console.log("both checked");
          let width =  samples * 2;
          canvas.width= width;
          canvas.height= height;
 
-         console.log(canvas_element);
          if(canvas_element !=null){
 
          canvas_element.style.display='block';
@@ -124,14 +130,15 @@ onMount(() => {
         }
 
         }
+        console.log("done");
       }
 
       $: if( checkedY & !checkedX){
+         
          let width =  samples * 20;
          canvas.width= width;
          canvas.height= height;
 
-         console.log(canvas_element);
          if(canvas_element !=null){
 
          canvas_element.style.display='block';
@@ -169,6 +176,7 @@ onMount(() => {
         }
 
         }
+        console.log("one done");
       }
    
    
