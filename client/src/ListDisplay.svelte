@@ -263,7 +263,7 @@ onMount(() => {
     <div class="row-data">
      {#each item as score}
       <span  class="allele{score} data">{score}</span>
-      {/each};
+      {/each}
 
       
    </div>

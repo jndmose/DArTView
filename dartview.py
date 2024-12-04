@@ -4,11 +4,18 @@ from flask import Blueprint, Flask, jsonify, flash, request,redirect, send_from_
 import os
 from werkzeug.utils import secure_filename
 from .report_format import DarTReportFormat
+from .constants import UPLOAD_FOLDER
+
+
 
 bp = Blueprint('dartview', __name__)
+# home = Path.home().absolute().as_posix()
+# mypath = home + "/flask"
+# if not os.path.isdir(mypath):
+#     os.makedirs(mypath)
 
 
-UPLOAD_FOLDER = "/home/moses/flask"
+#UPLOAD_FOLDER =constants.UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'csv'}
 ALLELE_ID= "AlleleID"
 SNP_MARKER_IDENTIFIER= '|'

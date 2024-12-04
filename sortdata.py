@@ -1,11 +1,20 @@
 from flask import json, Blueprint, session, request
 from itertools import compress
+from .constants import UPLOAD_FOLDER
 
 DART_HEADERS ='*'
 import pandas as pd
 import numpy as np
 import os
-UPLOAD_FOLDER = "/home/moses/flask"
+from pathlib import Path
+
+# home = Path.home().absolute().as_posix()
+# mypath = home + "/flask"
+# if not os.path.isdir(mypath):
+#     os.makedirs(mypath)
+
+
+# UPLOAD_FOLDER =mypath
 bp = Blueprint("sortdata", __name__)
 
 @bp.route('/sort_data',  methods=['GET', 'POST'])
