@@ -57,44 +57,87 @@ def display_data():
     data_with_headers= data_with_headers[1:]
     data_with_headers.columns= data_header
     genotypic_data= data_with_headers.iloc[:, start_genotypic_col:]
-    genotypic_data_nan= genotypic_data.replace(["-"], np.nan)
-    calculated_Mcall_rate= genotypic_data_nan.apply("count", axis=1)
-    calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
-    
-    data_with_headers["MarkerCallRate"]= calculated_Mcall_rate
-    
-    sorted_data= {}
+    sorted_data= data_with_headers
     sort_criteria = request.json
     new_dict = {key: val for key, val in sort_criteria.items() if val != "-unsorted-"}
     if(not new_dict):
-        return
+        return json.dumps(genotypic_data.to_numpy().tolist())
     
     if("metadata1" in new_dict):
         metadata = new_dict["metadata1"]
         sort_order= new_dict["sortorder1"]
-        sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
-        sorted_data= sorted_data.drop([metadata], axis=1)
+        if(metadata=="SampleCallRate"):
+            sampleCallRate= calculateSampleCallRate(data_with_headers, start_genotypic_col)
+            sorted_data=Sort_with_samplecallrate(data_with_headers, sampleCallRate, start_genotypic_col,sort_order)
+           
+         
+        else:
+            markerCallRate = calculateMarkerCallRate(data_with_headers,start_genotypic_col)
+            data_with_headers["MarkerCallRate"]= markerCallRate  
+            sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
+            sorted_data= sorted_data.drop([metadata], axis=1)
+            
     
     if("metadata2" in new_dict):
         metadata = new_dict["metadata2"]
         sort_order= new_dict["sortorder2"]
-        sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
-        sorted_data= sorted_data.drop([metadata], axis=1)
+        if(metadata=="SampleCallRate"):
+            sampleCallRate= calculateSampleCallRate(sorted_data, start_genotypic_col)
+            sorted_data=Sort_with_samplecallrate(sorted_data, sampleCallRate, start_genotypic_col, sort_order)
+        
+        else:
+            markerCallRate= calculateMarkerCallRate(sorted_data,start_genotypic_col)
+            print(markerCallRate)
+            sorted_data["MarkerCallRate"]= calculateMarkerCallRate(sorted_data,start_genotypic_col)
+            #print(sorted_data)
+            
+            sorted_data= sorted_data.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
+           #print(sorted_data.iloc[:, start_genotypic_col:])
+            sorted_data= sorted_data.drop([metadata], axis=1)
+          
+           
         
         
-    genotypic_data= sorted_data.iloc[:, start_genotypic_col:]
     
+
+    data =  json.dumps(sorted_data.iloc[:, start_genotypic_col:].to_numpy().tolist())
+    return data
+
+def Sort_with_samplecallrate(data, sampleCallrate, start_genotypic_col, sort_order):
+    
+    metadata_data = data.iloc[:,:start_genotypic_col]
+    genotypic_data= data.iloc[:, start_genotypic_col:]
     genotypic_data_T = genotypic_data.T
+    
     data_header = genotypic_data_T.columns
             
     genotypic_data_T.columns= range(len(data_header))
 
-    genotypic_data_T[len(genotypic_data_T.columns)]=calculated_Scall_rate
+    genotypic_data_T[len(genotypic_data_T.columns)]=sampleCallrate
     genotypic_data_T.rename(columns={genotypic_data_T.columns[len(genotypic_data_T.columns)-1]:"SampleCallRate"}, inplace=True)
     
-    sorted_data_T = genotypic_data_T.sort_values(by="SampleCallRate", ascending=True, kind="mergesort")
+    sorted_data_T = genotypic_data_T.sort_values(by="SampleCallRate", ascending=sort_order=='Ascending', kind="mergesort")
+    
     
     sorted_data_T= sorted_data_T.drop(['SampleCallRate'], axis=1)
+    new_data = sorted_data_T.T
+    metadata_data.reset_index(drop=True, inplace=True)
+    new_data.reset_index(drop=True, inplace=True)
+    #print(metadata_data)
+   
+    result= metadata_data.join(new_data)
+    
+    return result
 
-    data =  json.dumps(sorted_data_T.T.to_numpy().tolist())
-    return data
+def calculateMarkerCallRate(data, start_genotypic_column):
+    genotypic_data =data.iloc[:, start_genotypic_column:]
+    genotypic_data_nan= genotypic_data.replace(["-"], np.nan)
+    calculated_Mcall_rate= genotypic_data_nan.apply("count", axis=1)
+    return calculated_Mcall_rate
+
+def calculateSampleCallRate(data, start_genotypic_column):
+    genotypic_data= data.iloc[:, start_genotypic_column:]
+    genotypic_data_nan= genotypic_data.replace(["-"], np.nan)
+    
+    calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
+    return calculated_Scall_rate

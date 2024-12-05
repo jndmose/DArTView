@@ -27,7 +27,7 @@ let styles = {
 
      
 
-     let mtdata = ["MarkerCallRate", "OneRatioRef","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
+     let mtdata = ["MarkerCallRate", "SampleCallRate","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
 
   
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));

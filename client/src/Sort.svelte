@@ -48,7 +48,7 @@
 </div>
 <p><b>Sort Key 2 </b></p> 
 <div class="sortkey">
-  <select class="form-select" bind:value={$selected2}  aria-label="Default select example">
+  <select class="form-select" bind:value={$selected2}  aria-label="Metadata Select" on:change={handleSelected}>
   
     <option selected>-unsorted-</option>
     {#each metadata as mtdata}
@@ -58,17 +58,17 @@
   
   <div class="radio-buttons">
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio"  value="Ascending" bind:group={$sort_order2}>
+      <input class="form-check-input" type="radio"  value="Ascending" bind:group={$sort_order2} on:change={handleSelected}>
       <label class="form-check-label" for="inlineRadio1">Ascending</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio"  value="Descending" bind:group={$sort_order2}>
+      <input class="form-check-input" type="radio"  value="Descending" bind:group={$sort_order2} on:change={handleSelected}>
       <label class="form-check-label" for="inlineRadio2">Descending</label>
     </div>
     </div>
  </div>
 
- <p><b>Sort Key 2 </b></p> 
+ <!-- <p><b>Sort Key 2 </b></p> 
 <div class="sortkey">
   <select class="form-select" bind:value={$selected2}  aria-label="Default select example">
   
@@ -88,7 +88,7 @@
       <label class="form-check-label" for="inlineRadio2">Descending</label>
     </div>
     </div>
- </div>
+ </div> -->
 <hr>
 <div class="submit-buttons">
 
