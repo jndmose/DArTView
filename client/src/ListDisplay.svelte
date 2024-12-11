@@ -88,7 +88,6 @@ onMount(() => {
 
 
        $: if(checkedX & checkedY){
-         console.log("both checked");
          let width =  samples * 2;
          canvas.width= width;
          canvas.height= height;
@@ -130,7 +129,6 @@ onMount(() => {
         }
 
         }
-        console.log("done");
       }
 
       $: if( checkedY & !checkedX){
@@ -176,7 +174,7 @@ onMount(() => {
         }
 
         }
-        console.log("one done");
+      
       }
    
    
@@ -187,11 +185,11 @@ onMount(() => {
 	<span> Samples : {$geno_data[0].length}</span> &nbsp; <span>Markers : {$geno_data.length}</span> &nbsp;
 	<!-- <button class="top-buttons" on:click={sortData} > Sort Data</button> -->
    <Modal show={$modal}>
-      <button  on:click={sortData}>Sort Data</button>
+      <button class="control-buttons" on:click={sortData}>Sort Data</button>
     </Modal>
 
     <div class="btn-group">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      <button type="button" class="btn btn-primary dropdown-toggle control-buttons" data-bs-toggle="dropdown" aria-expanded="false">
         Color Scheme
       </button>
       <ul class="dropdown-menu">
@@ -220,11 +218,11 @@ onMount(() => {
       </ul>
     </div>
 
-        <button style="position:relative; padding-left:26px;" on:click={ () => handleClickZoom('zoomX')}>
+        <button class="control-buttons" style="position:relative; padding-left:26px;" on:click={ () => handleClickZoom('zoomX')}>
          <input type="checkbox" bind:checked={checkedX} style="position: absolute; top:10px; left: 4px;"> Zoom X-axis
         </button>
 
-        <button style="position:relative; padding-left:26px;" on:click={() => handleClickZoom('zoomY')}>
+        <button class="control-buttons" style="position:relative; padding-left:26px;" on:click={() => handleClickZoom('zoomY')}>
          <input type="checkbox" bind:checked={checkedY} style="position: absolute; top:10px; left: 4px;"> Zoom Y-axis
         </button>
 
@@ -377,6 +375,9 @@ onMount(() => {
 	  padding: 20px;
 	  height: calc(105vh - 15em);
       overflow-y: scroll;
+}
+.control-buttons{
+   border-radius: 12px;
 }
 
    </style>
