@@ -21,6 +21,21 @@
   
 	
 </script>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#marker-tab" data-toggle='tab' >Marker Metadata</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#sample-tab" data-toggle='tab'>Sample Metadata</a>
+  </li>
+
+</ul>
+
+<div class="tab-content">
+
+<div class='tab-pane container fade in show active' id="marker-tab">
+
 <p>Sort Criteria</p>
 <hr>
   <p><b>Sort Key 1 </b></p>
@@ -93,6 +108,13 @@
 <div class="submit-buttons">
 
 <input type="button" class="btn btn-info buttons" value="Exit" on:click={handleExit}>
+</div>
+</div>
+<div class='tab-pane container fade' id="sample-tab">
+
+  <p>Samples Panel</p>
+</div>
+
 </div>
 
 <style>
