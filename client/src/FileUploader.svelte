@@ -14,7 +14,7 @@
     DropdownItem
   } from 'sveltestrap';
 	import Controller from './Controller.js';
-  import {geno_data} from './data.js';
+  import {geno_data,sample_list,marker_list} from './data.js';
    const controller = new Controller();
 
    import { Styles } from 'sveltestrap';
@@ -34,9 +34,16 @@
   async function loadFile(fl){
 	hasError= false; 
 	$geno_data = await controller.openFile(fl);
+  
 	if($geno_data instanceof Error){
 		hasError= true;
 	}
+  else{
+    $sample_list = $geno_data.pop();
+    $marker_list= $geno_data.pop();
+  }
+
+
    }
 
    $: runUpload =  () => {

@@ -2,7 +2,7 @@
 import VirtualList from './VirtualList.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
-import {geno_data, modal} from './data.js';
+import {geno_data, modal, sample_list, marker_list} from './data.js';
 import { onMount } from "svelte";
 
 let start;
@@ -10,8 +10,11 @@ let end;
 let checkedX= false;
 let checkedY = false;
 let canvas;
+let y=0;
 let canvas_element;
 const max_height= '10000';
+console.log($sample_list)
+console.log($marker_list)
 
 let styles = {
 		'allele2': '#e74c3c',
@@ -258,13 +261,15 @@ onMount(() => {
      
 {#if !checkedX & !checkedY }
 <VirtualList  items= {$geno_data} bind:start bind:end let:item>
+  
     <div class="row-data">
-     {#each item as score}
-      <span  class="allele{score} data">{score}</span>
+     {#each item as score , i}
+      <span title="Sample: {$sample_list[i]}" class="allele{score} data">{score}</span>
       {/each}
 
       
    </div>
+   
    
    </VirtualList>
    
@@ -352,6 +357,7 @@ onMount(() => {
 	box-shadow: 0 6px 20px rgb(93 93 93 / 23%);
 
    }
+
 
    #geno-map {
       width: 100%;

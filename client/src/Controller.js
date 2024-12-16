@@ -19,10 +19,12 @@ export default class Controller{
                body: formData
                     });
                     if(!response.ok){
+              
                       return new Error(`Response status: ${response.status}`);
                     }
                       
                    const json = await response.json();
+
                    return json;
                                
   }  catch(error){
