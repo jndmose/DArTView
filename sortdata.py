@@ -8,13 +8,6 @@ import numpy as np
 import os
 from pathlib import Path
 
-# home = Path.home().absolute().as_posix()
-# mypath = home + "/flask"
-# if not os.path.isdir(mypath):
-#     os.makedirs(mypath)
-
-
-# UPLOAD_FOLDER =mypath
 bp = Blueprint("sortdata", __name__)
 
 @bp.route('/sort_data',  methods=['GET', 'POST'])
@@ -50,10 +43,10 @@ def display_data():
 
     for row in sample_df2.iterrows():
         sample_meta_list.append(row)
-            
-    allele_id_pos= sample_meta_row
 
     data_header= data_with_headers.iloc[0]
+    marker_metadata = data_header.iloc[0:start_genotypic_col]
+
     data_with_headers= data_with_headers[1:]
     data_with_headers.columns= data_header
     genotypic_data= data_with_headers.iloc[:, start_genotypic_col:]
@@ -66,40 +59,14 @@ def display_data():
     if("metadata1" in new_dict):
         metadata = new_dict["metadata1"]
         sort_order= new_dict["sortorder1"]
-        if(metadata=="SampleCallRate"):
-            sampleCallRate= calculateSampleCallRate(data_with_headers, start_genotypic_col)
-            sorted_data=Sort_with_samplecallrate(data_with_headers, sampleCallRate, start_genotypic_col,sort_order)
-           
-         
-        else:
-            markerCallRate = calculateMarkerCallRate(data_with_headers,start_genotypic_col)
-            data_with_headers["MarkerCallRate"]= markerCallRate  
-            sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
-            sorted_data= sorted_data.drop([metadata], axis=1)
+        sorted_data= sort_with_metadata(metadata, sort_order, data_with_headers, start_genotypic_col)
             
-    
     if("metadata2" in new_dict):
         metadata = new_dict["metadata2"]
         sort_order= new_dict["sortorder2"]
-        if(metadata=="SampleCallRate"):
-            sampleCallRate= calculateSampleCallRate(sorted_data, start_genotypic_col)
-            sorted_data=Sort_with_samplecallrate(sorted_data, sampleCallRate, start_genotypic_col, sort_order)
-        
-        else:
-            markerCallRate= calculateMarkerCallRate(sorted_data,start_genotypic_col)
-            print(markerCallRate)
-            sorted_data["MarkerCallRate"]= calculateMarkerCallRate(sorted_data,start_genotypic_col)
-            #print(sorted_data)
-            
-            sorted_data= sorted_data.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
-           #print(sorted_data.iloc[:, start_genotypic_col:])
-            sorted_data= sorted_data.drop([metadata], axis=1)
+        print(metadata)
+        sorted_data= sort_with_metadata(metadata, sort_order,sorted_data, start_genotypic_col)
           
-           
-        
-        
-    
-
     data =  json.dumps(sorted_data.iloc[:, start_genotypic_col:].to_numpy().tolist())
     return data
 
@@ -123,10 +90,8 @@ def Sort_with_samplecallrate(data, sampleCallrate, start_genotypic_col, sort_ord
     new_data = sorted_data_T.T
     metadata_data.reset_index(drop=True, inplace=True)
     new_data.reset_index(drop=True, inplace=True)
-    #print(metadata_data)
-   
-    result= metadata_data.join(new_data)
     
+    result= metadata_data.join(new_data)
     return result
 
 def calculateMarkerCallRate(data, start_genotypic_column):
@@ -141,3 +106,17 @@ def calculateSampleCallRate(data, start_genotypic_column):
     
     calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
     return calculated_Scall_rate
+
+def sort_with_metadata(metadata, sort_order, data_with_headers, start_genotypic_column):
+    if metadata == 'CallRate':
+        markerCallRate = calculateMarkerCallRate(data_with_headers,start_genotypic_column)
+        data_with_headers["MarkerCallRate"]= markerCallRate  
+        sorted_data= data_with_headers.sort_values(by=metadata, ascending=sort_order=='Ascending',kind='mergesort')
+   
+        sorted_data= sorted_data.drop(['MarkerCallRate'], axis=1)
+        return sorted_data
+    
+    return data_with_headers
+        
+        
+    

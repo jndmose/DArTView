@@ -5,10 +5,12 @@
   import {createEventDispatcher} from 'svelte';
   const controller = new Controller();
    async function handleSelected(event) {
+  
     $geno_data = await controller.sortData($selected1, $sort_order1,$selected2,$sort_order2,$selected3, $sort_order3);
  
   };
   export let metadata =[];
+
 
 
  function handleExit(){
@@ -83,9 +85,9 @@
     </div>
  </div>
 
- <!-- <p><b>Sort Key 2 </b></p> 
+ <p><b>Sort Key 3 </b></p> 
 <div class="sortkey">
-  <select class="form-select" bind:value={$selected2}  aria-label="Default select example">
+  <select class="form-select" bind:value={$selected3}  aria-label="Default select example">
   
     <option selected>-unsorted-</option>
     {#each metadata as mtdata}
@@ -95,15 +97,15 @@
   
   <div class="radio-buttons">
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio"  value="Ascending" bind:group={$sort_order2}>
+      <input class="form-check-input" type="radio"  value="Ascending" bind:group={$sort_order3}>
       <label class="form-check-label" for="inlineRadio1">Ascending</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio"  value="Descending" bind:group={$sort_order2}>
+      <input class="form-check-input" type="radio"  value="Descending" bind:group={$sort_order3}>
       <label class="form-check-label" for="inlineRadio2">Descending</label>
     </div>
     </div>
- </div> -->
+ </div>
 <hr>
 <div class="submit-buttons">
 

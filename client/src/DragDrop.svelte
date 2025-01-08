@@ -26,14 +26,22 @@ import ListDisplay from './ListDisplay.svelte';
 
 
  const controller = new Controller();
- import {geno_data} from './data.js';
+ import {geno_data, marker_metadata, sample_list,marker_list} from './data.js';
 
 
  let sampleNumber = 0;
 
  async function openFile(fl){ 
-	console.log(fl);
 	$geno_data = await controller.openFile(fl);
+	if($geno_data instanceof Error){
+		hasError= true;
+	}
+  else{
+    $marker_metadata= $geno_data.pop();
+    $sample_list = $geno_data.pop();
+    $marker_list= $geno_data.pop();
+
+  }
 	
 	sampleNumber = $geno_data[0].length;
    }

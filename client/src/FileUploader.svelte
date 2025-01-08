@@ -14,7 +14,7 @@
     DropdownItem
   } from 'sveltestrap';
 	import Controller from './Controller.js';
-  import {geno_data,sample_list,marker_list} from './data.js';
+  import {geno_data,sample_list,marker_list, marker_metadata} from './data.js';
    const controller = new Controller();
 
    import { Styles } from 'sveltestrap';
@@ -39,8 +39,11 @@
 		hasError= true;
 	}
   else{
+    console.log($geno_data)
+    $marker_metadata= $geno_data.pop();
     $sample_list = $geno_data.pop();
     $marker_list= $geno_data.pop();
+
   }
 
 

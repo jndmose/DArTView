@@ -2,7 +2,7 @@
 import VirtualList from './VirtualList.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
-import {geno_data, modal, sample_list, marker_list} from './data.js';
+import {geno_data, modal, sample_list, marker_list, marker_metadata} from './data.js';
 import { onMount } from "svelte";
 
 let start;
@@ -13,9 +13,7 @@ let canvas;
 let y=0;
 let canvas_element;
 const max_height= '10000';
-console.log($sample_list)
-console.log($marker_list)
-
+let mtdata = [];
 let styles = {
 		'allele2': '#e74c3c',
 		'allele1': '#2ecc71',
@@ -28,9 +26,13 @@ let styles = {
 		.join(';');
 
 
-     
+     let SNP_metadata = ["CallRate", "OneRatioRef", "OneRatioSnp", "FreqHomRef", "FreqHomSnp", "FreqHets", "PICRef", "PICSnp", "AvgPIC", "AvgCountRef", "AvgCountSnp", "RepAvg"]
+      for(let i=0; i<$marker_metadata.length;i++){
+         if(SNP_metadata.includes($marker_metadata[i])){
+            mtdata.push($marker_metadata[i])
+         }
+      }
 
-     let mtdata = ["MarkerCallRate", "SampleCallRate","OneRatioSnp","FreqHomRef","FreqHomSnp","FreqHets","PICRef"]
 
   
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));

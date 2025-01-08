@@ -11,3 +11,4 @@ export let sort_order3=writable('Ascending');
 export let cssVarStyles = writable([]);
 export let sample_list = writable([]);
 export let marker_list = writable([]);
+export let marker_metadata = writable([]);

@@ -1,3 +1,4 @@
+from json import dumps, loads
 import pandas as pd
 import numpy as np
 from flask import Blueprint, Flask, jsonify, flash, request,redirect, send_from_directory, json, session
@@ -49,7 +50,7 @@ def home(path):
 def upload_file():
     
     if request.method=='POST':
-        print("we are posting fish")
+
         
         if 'file' not in request.files: 
             flash('No file part', 'error')
@@ -123,7 +124,10 @@ def upload_file():
             data= data[1:]
             
             data.columns= data_header
-            marker_column = data.iloc[:,0]
+        
+            marker_list = data.iloc[:,0]
+            marker_metadata = data_header.iloc[0:start_genotypic_col]
+           
             
             
             #report_Mcall_rate= data.CallRate .apply(lambda x: float(x))
@@ -182,66 +186,27 @@ def upload_file():
 
            
             #return render_template("basic_table.html",row_data=list(df.values.tolist()))
-            data =  json.dumps(genotypic_data.to_numpy().tolist())
-            return data
+            # genotypic_data.reset_index(drop=True, inplace=True)
+            # marker_column.reset_index(drop=True, inplace=True)
+            # result= marker_column.join(genotypic_data)
+            # result.set_index('AlleleID',inplace=True)
+          
+            # result2 = result.to_json(orient="columns")
+            # parsed= loads(result2)
+            # print(dumps(parsed, indent=4))
+            sample_list = genotypic_data.columns.tolist()
+            
+            data = genotypic_data.to_numpy().tolist()
+            data.append(marker_list.to_numpy().tolist())
+            data.append(sample_list)
+            data.append(marker_metadata.to_numpy().tolist())
+        
+            json_data =  json.dumps(data)
+
+            return json_data
           
         
 
-# @app.route('/sort_data')
-# def display_data():
-
-#     data = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], "sort-data.csv"), dtype=str, header=None)
-#     #Get first column
-#     first_column = data.iloc[:,0]         
-#     sample_meta_row =0
-#     for val in first_column:
-#         if val==DART_HEADERS:
-#             sample_meta_row+=1
-#         else:
-#             break
-           
-#     sample_df= data.iloc[:sample_meta_row+1]
-#     data_with_headers= data.iloc[sample_meta_row:]
-    
-   
-#     first_row = sample_df.iloc[0]
-            
-#     sample_meta_list = []
-
-#     start_genotypic_col= 0
-#      #Get start of genotypic data
-#     for val in first_row:
-#         if val == DART_HEADERS:
-#             start_genotypic_col+=1
-#         else:
-#             break
-
-#     sample_df2 = sample_df.iloc[:, start_genotypic_col:]
-
-#     for row in sample_df2.iterrows():
-#         sample_meta_list.append(row)
-            
-#     allele_id_pos= sample_meta_row
-
-#     #Remove all columns above the allele id position
-#     #data_with_headers = data_with_headers.iloc[allele_id_pos:,:]
-
-    
-         
-    
-#     data_header= data_with_headers.iloc[0]
-#     data_with_headers= data_with_headers[1:]
-#     data_with_headers.columns= data_header
-           
-#     sorted_data= data_with_headers.sort_values(by="CallRate", ascending=True)
-    
-#     genotypic_data= sorted_data.iloc[:, start_genotypic_col:]
-    
-#     #print(genotypic_data)
-#     #genotypic_data= genotypic_data.iloc[1:]
-#     data =  json.dumps(genotypic_data.to_numpy().tolist())
-#     return data
-   
         
 def check_report_format(first_column):
     #pick the first 6 markers ids values for comparison and store in a list
