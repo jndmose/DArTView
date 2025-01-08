@@ -52,8 +52,7 @@ export default class Controller{
       "metadata2":metadata2, 
       "sortorder2": sort_order2,
         "metadata3":metadata3, 
-        "sortorder3": sort_order3}    
-        console.log(post_data)    
+        "sortorder3": sort_order3}       
        let data;
        await fetch('http://127.0.0.1:5000/sort_data',{
                method: 'POST',
