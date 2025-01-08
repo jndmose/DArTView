@@ -59,13 +59,18 @@ def display_data():
     if("metadata1" in new_dict):
         metadata = new_dict["metadata1"]
         sort_order= new_dict["sortorder1"]
-        sorted_data= sort_with_metadata(metadata, sort_order, data_with_headers, start_genotypic_col)
+        sorted_data= sort_with_marker_metadata(metadata, sort_order, data_with_headers, start_genotypic_col)
             
     if("metadata2" in new_dict):
         metadata = new_dict["metadata2"]
         sort_order= new_dict["sortorder2"]
+        sorted_data= sort_with_marker_metadata(metadata, sort_order,sorted_data, start_genotypic_col)
+        
+    if("metadata3" in new_dict):
+        metadata = new_dict["metadata3"]
         print(metadata)
-        sorted_data= sort_with_metadata(metadata, sort_order,sorted_data, start_genotypic_col)
+        sort_order= new_dict["sortorder3"]
+        sorted_data= sort_with_marker_metadata(metadata, sort_order,sorted_data, start_genotypic_col)
           
     data =  json.dumps(sorted_data.iloc[:, start_genotypic_col:].to_numpy().tolist())
     return data
@@ -107,7 +112,7 @@ def calculateSampleCallRate(data, start_genotypic_column):
     calculated_Scall_rate = genotypic_data_nan.apply("count", axis=0)
     return calculated_Scall_rate
 
-def sort_with_metadata(metadata, sort_order, data_with_headers, start_genotypic_column):
+def sort_with_marker_metadata(metadata, sort_order, data_with_headers, start_genotypic_column):
     if metadata == 'CallRate':
         markerCallRate = calculateMarkerCallRate(data_with_headers,start_genotypic_column)
         data_with_headers["MarkerCallRate"]= markerCallRate  
