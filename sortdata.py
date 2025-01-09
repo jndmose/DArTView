@@ -68,7 +68,7 @@ def display_data():
         
     if("metadata3" in new_dict):
         metadata = new_dict["metadata3"]
-        print(metadata)
+        
         sort_order= new_dict["sortorder3"]
         sorted_data= sort_with_marker_metadata(metadata, sort_order,sorted_data, start_genotypic_col)
           

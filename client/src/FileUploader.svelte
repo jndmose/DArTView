@@ -13,6 +13,15 @@
     DropdownMenu,
     DropdownItem
   } from 'sveltestrap';
+  
+	import { loader } from './loader';
+  import { writable  }from 'svelte/store';
+	let loading = writable(false);
+  let loading_value= "Loading data..."
+	
+	function runUpdate(val) {
+		loading.update(n => n=val);
+	}
 	import Controller from './Controller.js';
   import {geno_data,sample_list,marker_list, marker_metadata} from './data.js';
    const controller = new Controller();
@@ -24,6 +33,7 @@
 	
   let isOpen = false;
   let hasError = false;
+  let isLoading = true;
   
 
   function handleUpdate(event) {
@@ -32,14 +42,16 @@
      
 
   async function loadFile(fl){
+  runUpdate(true);
 	hasError= false; 
 	$geno_data = await controller.openFile(fl);
   
 	if($geno_data instanceof Error){
+    runUpdate(false);
 		hasError= true;
 	}
   else{
-    console.log($geno_data)
+    runUpdate(false);
     $marker_metadata= $geno_data.pop();
     $sample_list = $geno_data.pop();
     $marker_list= $geno_data.pop();
@@ -61,7 +73,7 @@
    
 </script>
 <Styles />
-<div class='dartView'>
+<div class='dartView' >
 <Navbar color="light" light expand="md">
 	<NavbarBrand >
        <img src="/images/snp-24.png" alt="DArTView logo" />
@@ -103,7 +115,8 @@
   </Navbar>
 <input id="upload" type="file"  on:change={loadFile} value=""/>
 
-
+<div class="upload-spinner" use:loader={loading}>
+	
 {#if hasError}
 <p>Oops, error occured. Check you have a proper DArT Marker file and upload again </p>
 {:else}
@@ -120,6 +133,10 @@
 {/if}
 
 </div>
+</div>
+
+
+
 <style>
 
    #upload{

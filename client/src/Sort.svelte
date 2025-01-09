@@ -3,10 +3,15 @@
   import Controller from './Controller.js';
   import{geno_data, modal, selected1,selected2, sort_order1, sort_order2,selected3,sort_order3} from './data.js';
   import {createEventDispatcher} from 'svelte';
+  import { loader } from './loader';
+  import { writable  }from 'svelte/store';
+  
   const controller = new Controller();
    async function handleSelected(event) {
+    runUpdate(true);
   
     $geno_data = await controller.sortData($selected1, $sort_order1,$selected2,$sort_order2,$selected3, $sort_order3);
+    runUpdate(false);
  
   };
   export let metadata =[];
@@ -18,12 +23,18 @@
   modal.set(null);
 
  }
+
+ 
+	let loading = writable(false);
+	
+	function runUpdate(val) {
+		loading.update(n => n=val);
   
-  
+  }
   
 	
 </script>
-
+<div class="sort-spinner" use:loader={loading}>
 <ul class="nav nav-tabs">
   <li class="nav-item">
     <a class="nav-link active" aria-current="page" href="#marker-tab" data-toggle='tab' >Marker Metadata</a>
@@ -115,6 +126,8 @@
 <div class='tab-pane container fade' id="sample-tab">
 
   <p>Samples Panel</p>
+</div>
+
 </div>
 
 </div>
