@@ -5,14 +5,23 @@ import Sort from './Sort.svelte';
 import {geno_data, modal, sample_list, marker_list, marker_metadata} from './data.js';
 import { onMount } from "svelte";
 
-let start;
-let end;
+import { loader } from './loader';
+import { writable  }from 'svelte/store';
+import canvasSize from 'canvas-size';
+
+
+// let start;
+// let end;
+let start1;
+let end1;
+let start2;
+let end2;
 let checkedX= false;
 let checkedY = false;
 let canvas;
 let y=0;
 let canvas_element;
-const max_height= '10000';
+const max_height= '35000';
 let mtdata = [];
 let styles = {
 		'allele2': '#e74c3c',
@@ -38,6 +47,10 @@ let styles = {
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));
 
   const handleClickZoom = ((which) => {
+   start1=0;
+   start2=0;
+   end1=0;
+   end2=0;
    if(which=='zoomX'){
       checkedX=!checkedX;
       handleZoomXaxis();
@@ -72,7 +85,7 @@ const markers = $geno_data.length;
 const samples = $geno_data[0].length;
 
 //width changes when zoom x is pressed
-const height=markers*2;
+const height=markers;
 
 const handleLongHeight = (() => {
    if(height > max_height){
@@ -80,19 +93,40 @@ const handleLongHeight = (() => {
    }
 })
 
+let loading = writable(false);
 
+async function test_canvas (){
+ // Optimized tests
+canvasSize.maxArea({
+  onSuccess({ width, height, testTime, totalTime }) {
+    console.log('Success:', width, height, testTime, totalTime);
+  },
+});
 
+}
+
+function runUpdate(val) {
+		loading.update(n => n=val);
+  
+  }
+  
 
 
 onMount(() => {
+
+   
    
  canvas = document.getElementById("canvas");
  canvas_element = document.getElementById("zoom-div");
+ test_canvas()
+ 
 
 });
 
 
        $: if(checkedX & checkedY){
+         runUpdate(true);
+      
          let width =  samples * 2;
          canvas.width= width;
          canvas.height= height;
@@ -128,12 +162,16 @@ onMount(() => {
 
             }
 
-            ctx.fillRect(i*2, j*2, 2, 2);
+            ctx.fillRect(i*2, j*1, 2, 1);
 
           }
         }
 
+        
+
         }
+        
+        runUpdate(false);
       }
 
       $: if( checkedY & !checkedX){
@@ -173,7 +211,7 @@ onMount(() => {
 
             }
 
-            ctx.fillRect(i*20, j*2, 20, 2);
+            ctx.fillRect(i*20, j*1, 20, 1);
 
           }
         }
@@ -241,14 +279,14 @@ onMount(() => {
   
 <!-- {#if checkedY & checkedX} -->
 
-<div id="zoom-div" style="display: none;" >
+<div id="zoom-div" style="display: none;"  use:loader={loading} >
    <canvas id="canvas"></canvas>
 </div>
 
     <!-- <Zoom cssVarStyles= {cssVarStyles} /> -->
 
     {#if checkedX & !checkedY}
-    <VirtualList  items= {$geno_data} bind:start bind:end let:item>
+    <VirtualList  items= {$geno_data} bind:start={start1} bind:end={end1} let:item>
       <div class="row-data" style="border-bottom: none;">
        {#each item as score}
         <span  class="allele{score} data" style="min-width:2px;"></span>
@@ -258,11 +296,11 @@ onMount(() => {
      </div>
      
      </VirtualList>
-     <div class="footer"><p>Showing {start}-{end} of {$geno_data.length} Markers</p></div>
+     <div class="footer"><p>Showing {start1}-{end1} of {$geno_data.length} Markers</p></div>
      {/if}
      
 {#if !checkedX & !checkedY }
-<VirtualList  items= {$geno_data} bind:start bind:end let:item>
+<VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item>
   
     <div class="row-data">
      {#each item as score , i}
@@ -275,7 +313,7 @@ onMount(() => {
    
    </VirtualList>
    
-   <div class="footer"><p>Showing {start}-{end} of {$geno_data.length} Markers</p></div>
+   <div class="footer"><p>Showing {start2}-{end2} of {$geno_data.length} Markers</p></div>
    {/if}
    
     </div>
