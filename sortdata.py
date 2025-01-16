@@ -1,6 +1,6 @@
 from flask import json, Blueprint, session, request
 from itertools import compress
-from .constants import UPLOAD_FOLDER
+from constants import UPLOAD_FOLDER
 
 DART_HEADERS ='*'
 import pandas as pd

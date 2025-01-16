@@ -4,8 +4,8 @@ import numpy as np
 from flask import Blueprint, Flask, jsonify, flash, request,redirect, send_from_directory, json, session
 import os
 from werkzeug.utils import secure_filename
-from .report_format import DarTReportFormat
-from .constants import UPLOAD_FOLDER
+from report_format import DarTReportFormat
+from constants import UPLOAD_FOLDER
 
 
 

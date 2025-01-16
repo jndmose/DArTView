@@ -1,6 +1,9 @@
+import sys
 import os
 
 from flask import Flask
+
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 
 def create_app(test_config=None):
@@ -24,8 +27,8 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    from . import dartview
-    from . import sortdata
+    import dartview
+    import sortdata
     
     app.register_blueprint(dartview.bp)
     app.register_blueprint(sortdata.bp)
