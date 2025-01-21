@@ -1,3 +1,4 @@
+from datetime import datetime
 from json import dumps, loads
 import pandas as pd
 import numpy as np
@@ -63,9 +64,11 @@ def upload_file():
         if file and allowed_file(file.filename):
             
             filename = secure_filename(file.filename)
-            session['filename'] = filename
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            data = pd.read_csv(os.path.join(UPLOAD_FOLDER, filename), dtype=str, header=None)
+            new_filename= f'{filename.split(".")[0]}-{str(datetime.now())}.csv'.replace(" ", "")
+            
+            session['filename'] = new_filename
+            file.save(os.path.join(UPLOAD_FOLDER, new_filename))
+            data = pd.read_csv(os.path.join(UPLOAD_FOLDER, new_filename), dtype=str, header=None)
             #Get first column
             first_column = data.iloc[:,0]
             
