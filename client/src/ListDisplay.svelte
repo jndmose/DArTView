@@ -124,102 +124,48 @@ onMount(() => {
 });
 
 
-       $: if(checkedX & checkedY){
-         runUpdate(true);
-      
-         let width =  samples * 2;
-         canvas.width= width;
-         canvas.height= height;
+$: if (checkedX & checkedY || checkedY & !checkedX) {
+   runUpdate(true);
 
-         if(canvas_element !=null){
+   let width = checkedX ? samples * 2 : samples * 20;
+   canvas.width = width;
+   canvas.height = height;
 
-         canvas_element.style.display='block';
+   if (canvas_element != null) {
+      canvas_element.style.display = 'block';
+   }
+
+   if (canvas.getContext) {
+      const ctx = canvas.getContext("2d");
+
+      for (let j = 0; j < markers; j++) {
+         for (let i = 0; i < samples; i++) {
+            let fillStyle;
+            switch ($geno_data[j][i]) {
+               case "0":
+                  fillStyle = styles['allele0'];
+                  break;
+               case "1":
+                  fillStyle = styles['allele1'];
+                  break;
+               case "2":
+                  fillStyle = styles['allele2'];
+                  break;
+               default:
+                  fillStyle = styles['allele-'];
+            }
+            ctx.fillStyle = fillStyle;
+            ctx.fillRect(i * (checkedX ? 2 : 20), j * 1, (checkedX ? 2 : 20), 1);
          }
-
-        if (canvas.getContext) {
-          const ctx = canvas.getContext("2d");
-         
-          for( let j =0 ; j< markers;j++){
-            for(let i=0; i< samples; i++){
-              
-            
-            if($geno_data[j][i]==="0"){
-              
-               ctx.fillStyle= styles['allele0'];
-        
-            }
-            else if($geno_data[j][i]==="1"){
-            ctx.fillStyle=styles['allele1']
-
-            }
-            else if($geno_data[j][i]==="2"){
-             ctx.fillStyle= styles['allele2']
-
-            }
-
-            else {
-               ctx.fillStyle= styles['allele-']
-
-            }
-
-            ctx.fillRect(i*2, j*1, 2, 1);
-
-          }
-        }
-
-        
-
-        }
-        
-        runUpdate(false);
       }
+   }
 
-      $: if( checkedY & !checkedX){
-         
-         let width =  samples * 20;
-         canvas.width= width;
-         canvas.height= height;
+   runUpdate(false);
+}
 
-         if(canvas_element !=null){
-
-         canvas_element.style.display='block';
-         }
-
-        if (canvas.getContext) {
-          const ctx = canvas.getContext("2d");
-         
-          for( let j =0 ; j< markers;j++){
-            for(let i=0; i< samples; i++){
-              
-            
-            if($geno_data[j][i]==="0"){
-              
-               ctx.fillStyle= styles['allele0'];
-        
-            }
-            else if($geno_data[j][i]==="1"){
-            ctx.fillStyle=styles['allele1']
-
-            }
-            else if($geno_data[j][i]==="2"){
-             ctx.fillStyle= styles['allele2']
-
-            }
-
-            else {
-               ctx.fillStyle= styles['allele-']
-
-            }
-
-            ctx.fillRect(i*20, j*1, 20, 1);
-
-          }
-        }
-
-        }
-      
-      }
-   
+const handleFilterData = () => {
+   // Add functionality for the new button here
+};
    
 </script>
 <div id='geno-map'  style="{cssVarStyles}">
@@ -267,6 +213,10 @@ onMount(() => {
 
         <button class="control-buttons" style="position:relative; padding-left:26px;" on:click={() => handleClickZoom('zoomY')}>
          <input type="checkbox" bind:checked={checkedY} style="position: absolute; top:10px; left: 4px;"> Zoom Y-axis
+        </button>
+
+        <button class="control-buttons" style="position:relative; padding-left:26px;" on:click={handleFilterData}>
+         Filter Data
         </button>
 
         
@@ -428,4 +378,3 @@ onMount(() => {
 
    </style>
 
-   
