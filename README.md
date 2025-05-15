@@ -7,8 +7,6 @@
 - [Installation](#installation)
 - [Try out DArTView](#try-out-dartview)
 - [Screenshots](#screenshots)
-- [Usage workflow concept](#usage-workflow-concept)
-- [Architecture](#architecture)
 
 ## About DArTView
 DArTview is a web application for marker data curation via metadata filtering. 
@@ -17,4 +15,18 @@ It offers a novel approach for gaining insights from genotypic data through sort
 
 The metadata statistical recalculations enables the user to quickly know how many markers they are loosing based on a metadata filtering criteria.
 The instant recalculation also enables the user get rid of monomorphic markers upon filtering.
+
+## Try out DArTView
+
+Try the test version of DArTView. Still under active development to add features
+https://dartview.seqart.net
+
+## Screenshots
+![DArTView GUI](https://github.com/jndmose/DArTView/blob/main/client/public/images/un-checked.png?raw=true)
+
+![DArTView GUI](https://github.com/jndmose/DArTView/blob/main/client/public/images/sort.png?raw=true)
+
+
+
+
 
