@@ -127,38 +127,31 @@ onMount(() => {
 $: if (checkedX & checkedY || checkedY & !checkedX) {
    runUpdate(true);
 
-   let width = checkedX ? samples * 2 : samples * 20;
-   canvas.width = width;
-   canvas.height = height;
+const blockWidth = checkedX ? 2 : 20;
+const blockHeight = 1;
+let width = samples * blockWidth;
+canvas.width = width;
+canvas.height = height;
 
-   if (canvas_element != null) {
-      canvas_element.style.display = 'block';
-   }
+if (canvas_element) {
+  canvas_element.style.display = 'block';
+}
 
-   if (canvas.getContext) {
-      const ctx = canvas.getContext("2d");
+if (canvas.getContext) {
+  const ctx = canvas.getContext("2d");
+  const alleleMap = {
+    "0": styles["allele0"],
+    "1": styles["allele1"],
+    "2": styles["allele2"],
+  };
 
-      for (let j = 0; j < markers; j++) {
-         for (let i = 0; i < samples; i++) {
-            let fillStyle;
-            switch ($geno_data[j][i]) {
-               case "0":
-                  fillStyle = styles['allele0'];
-                  break;
-               case "1":
-                  fillStyle = styles['allele1'];
-                  break;
-               case "2":
-                  fillStyle = styles['allele2'];
-                  break;
-               default:
-                  fillStyle = styles['allele-'];
-            }
-            ctx.fillStyle = fillStyle;
-            ctx.fillRect(i * (checkedX ? 2 : 20), j * 1, (checkedX ? 2 : 20), 1);
-         }
-      }
-   }
+  for (let j = 0; j < markers; j++) {
+    for (let i = 0; i < samples; i++) {
+      ctx.fillStyle = alleleMap[$geno_data[j][i]] || styles["allele-"];
+      ctx.fillRect(i * blockWidth, j * blockHeight, blockWidth, blockHeight);
+    }
+  }
+}
 
    runUpdate(false);
 }

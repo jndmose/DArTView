@@ -7,10 +7,11 @@
   import { writable  }from 'svelte/store';
   
   const controller = new Controller();
-   async function handleSelected(event) {
+   async function handleSelected() {
     runUpdate(true);
   
     $geno_data = await controller.sortData($selected1, $sort_order1,$selected2,$sort_order2,$selected3, $sort_order3);
+    
     runUpdate(false);
  
   };
