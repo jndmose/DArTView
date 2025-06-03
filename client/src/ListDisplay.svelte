@@ -123,13 +123,24 @@ onMount(() => {
 
 });
 
+function hexToRGB(hex) {
+  const bigint = parseInt(hex.replace("#", ""), 16);
+  return [
+    (bigint >> 16) & 255, // R
+    (bigint >> 8) & 255,  // G
+    bigint & 255          // B
+  ];
+}
+
 
 $: if (checkedX & checkedY || checkedY & !checkedX) {
    runUpdate(true);
 
 const blockWidth = checkedX ? 2 : 20;
 const blockHeight = 1;
-let width = samples * blockWidth;
+const width = samples * blockWidth;
+const height = markers * blockHeight;
+
 canvas.width = width;
 canvas.height = height;
 
@@ -139,18 +150,39 @@ if (canvas_element) {
 
 if (canvas.getContext) {
   const ctx = canvas.getContext("2d");
+
+  // Convert hex to RGB arrays
   const alleleMap = {
-    "0": styles["allele0"],
-    "1": styles["allele1"],
-    "2": styles["allele2"],
+    "0": hexToRGB(styles["allele0"]),
+    "1": hexToRGB(styles["allele1"]),
+    "2": hexToRGB(styles["allele2"]),
+    "-": hexToRGB(styles["allele-"])
   };
+
+
+  const imageData = ctx.createImageData(width, height);
+  const data = imageData.data;
 
   for (let j = 0; j < markers; j++) {
     for (let i = 0; i < samples; i++) {
-      ctx.fillStyle = alleleMap[$geno_data[j][i]] || styles["allele-"];
-      ctx.fillRect(i * blockWidth, j * blockHeight, blockWidth, blockHeight);
+      const allele = $geno_data[j][i] ?? "-";
+      const color = alleleMap[allele] || alleleMap["-"];
+
+      for (let dx = 0; dx < blockWidth; dx++) {
+        for (let dy = 0; dy < blockHeight; dy++) {
+          const x = i * blockWidth + dx;
+          const y = j * blockHeight + dy;
+          const index = (y * width + x) * 4;
+          data[index] = color[0];     // R
+          data[index + 1] = color[1]; // G
+          data[index + 2] = color[2]; // B
+          data[index + 3] = 255;      // A
+        }
+      }
     }
   }
+
+  ctx.putImageData(imageData, 0, 0);
 }
 
    runUpdate(false);
