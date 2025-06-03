@@ -95,32 +95,16 @@ const handleLongHeight = (() => {
 
 let loading = writable(false);
 
-async function test_canvas (){
- // Optimized tests
-canvasSize.maxArea({
-  onSuccess({ width, height, testTime, totalTime }) {
-    console.log('Success:', width, height, testTime, totalTime);
-  },
-});
-
-}
-
 function runUpdate(val) {
 		loading.update(n => n=val);
   
   }
-  
-
 
 onMount(() => {
-
-   
-   
+ 
  canvas = document.getElementById("canvas");
  canvas_element = document.getElementById("zoom-div");
- test_canvas()
  
-
 });
 
 function hexToRGB(hex) {
@@ -251,14 +235,9 @@ const handleFilterData = () => {
        
 	</div>
 
-  
-<!-- {#if checkedY & checkedX} -->
-
 <div id="zoom-div" style="display: none;"  use:loader={loading} >
    <canvas id="canvas"></canvas>
 </div>
-
-    <!-- <Zoom cssVarStyles= {cssVarStyles} /> -->
 
     {#if checkedX & !checkedY}
     <VirtualList  items= {$geno_data} bind:start={start1} bind:end={end1} let:item>
