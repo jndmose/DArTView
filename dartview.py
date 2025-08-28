@@ -85,16 +85,17 @@ def upload_file():
             #print("sample meta row is", first_column.iloc[sample_meta_row+2:20])
             # Use Marker id column to check the report type
             dart_report_format = check_report_format(first_column.iloc[sample_meta_row+1:21])
-            print("dart report format is", dart_report_format)
-            
-           #subset with sample meta data
+            print("Sample meta row is ", sample_meta_row)
+        
+           
+        if dart_report_format == DarTReportFormat.SNP_ONE_ROW.name or dart_report_format == DarTReportFormat.SNP_TWO_ROW.name:
+            #subset with sample meta data
             sample_df= data.iloc[:sample_meta_row+1]
             first_row = sample_df.iloc[0]
+            print("first row is", first_row)
             #get number of markers , subtract 1 to account for the header row
             markers_number= len(first_column)-sample_meta_row-1
-            #markers_number = int(markers_number/2 if dart_report_format==2 else markers_number)
-
-            #print("Markers number is", markers_number)
+            print("markers number is", markers_number)
 
             
             #remove *s from the sample_df
@@ -104,17 +105,16 @@ def upload_file():
             #Get start of genotypic data
             for val in first_row:
                 if val == DART_HEADERS:
-                    start_genotypic_col+=1
+                    start_genotypic_col +=1
                 else:
                     break
+            #get the data with sample meta data
 
             sample_df2 = sample_df.iloc[:, start_genotypic_col:]
 
             for row in sample_df2.iterrows():
                 sample_meta_list.append(row)
-
-
-            #print(sample_meta_list[0])
+            
 
             samples_number= len(first_row)- start_genotypic_col
             
@@ -132,7 +132,35 @@ def upload_file():
             marker_list = data.iloc[:,0]
             marker_metadata = data_header.iloc[0:start_genotypic_col]
            
+            genotypic_data= data.iloc[:, start_genotypic_col:]
+            if dart_report_format== DarTReportFormat.SNP_TWO_ROW.name:
+                # Convert two-row SNP to single-row SNP with the correct condition
+                combined_data = []
+                for i in range(0, genotypic_data.shape[0], 2):
+                    row1 = genotypic_data.iloc[i]
+                    row2 = genotypic_data.iloc[i + 1]
+                    combined_row = row1.combine(row2, lambda x, y: 
+                        '2' if x == '1' and y == '1' else
+                        '0' if x == '1' and y == '0' else
+                        '1' if x == '0' and y == '1' else
+                        '0' if x == '0' and y == '0' else
+                        '-'
+                    )
+                    combined_data.append(combined_row)
+                genotypic_data = pd.DataFrame(combined_data)
+                
+                
             
+            
+            #report_Mcall_rate= data.CallRate .apply(lambda x: float(x))
+            #print("report call rate values are",report_Mcall_rate )
+            #return render_template('basic_table.html', row_data=list(report_Mcall_rate.values.tolist()))
+            
+            #Get the genotypic data from this-- remove the meta data
+           
+            #genotypic_data.insert(0,"AlleleID", marker_column,True)
+            
+            #genotypic_data.columns = genotypic_data.iloc[0]
             
             #report_Mcall_rate= data.CallRate .apply(lambda x: float(x))
             #print("report call rate values are",report_Mcall_rate )
@@ -141,12 +169,17 @@ def upload_file():
             #return render_template('basic_table.html', row_data=list(report_Mcall_rate.values.tolist()))
             
             #Get the genotypic data from this-- remove the meta data
-            genotypic_data= data.iloc[:, start_genotypic_col:]
+           
             #genotypic_data.insert(0,"AlleleID", marker_column,True)
             
             #genotypic_data.columns = genotypic_data.iloc[0]
             
             
+            #genotypes_number = genotypic_data.iloc[0].count()
+        
+            #genotypic_data = genotypic_data.replace(["-"], np.nan)
+            #genotypic_data.index = first_column.loc[sample_meta_row+1:]
+            #print(genotypic_data.columns)
             #genotypes_number = genotypic_data.iloc[0].count()
         
             #genotypic_data = genotypic_data.replace(["-"], np.nan)
@@ -262,7 +295,7 @@ def make_pretty(styler):
 
 
 
-    
+
 
 
 
