@@ -36,9 +36,6 @@ def load_file():
         return send_from_directory('client/public', 'index.html')
     
     
-        
-    
-
 @bp.route('/base')
 def base():
     return send_from_directory('client/public', 'index.html')
@@ -61,10 +58,15 @@ def upload_file():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
+        if file:
+            if not allowed_file(file.filename):
+                flash('File type not allowed', 'error')
+                return redirect("/base")
+            #Secure the filename before storing it directly to the filesystem
+            #Append current date and time to the filename to make it unique
             
             filename = secure_filename(file.filename)
-            new_filename= f'{filename.split(".")[0]}-{str(datetime.now())}.csv'.replace(" ", "")
+            new_filename= f'{filename.split(".")[0]}-{os.urandom(15).hex()}.csv'.replace(" ", "")
             
             session['filename'] = new_filename
             file.save(os.path.join(UPLOAD_FOLDER, new_filename))
@@ -205,6 +207,7 @@ def upload_file():
             data.append(marker_metadata.to_numpy().tolist())
         
             json_data =  json.dumps(data)
+            
 
             return json_data
           

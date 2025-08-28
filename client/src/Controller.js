@@ -1,5 +1,6 @@
 export default class Controller{
    
+  static url = 'http://localhost:3000';
       
      async openFile (fl) {
         let data;
@@ -14,7 +15,7 @@ export default class Controller{
           formData.append('file', file)
       try{
      
-       const response= await fetch('http://127.0.0.1:5000/upload_file',{
+       const response= await fetch(Controller.url + '/upload_file',{
                method: 'POST',
                body: formData
                     });
@@ -54,7 +55,7 @@ export default class Controller{
         "metadata3":metadata3, 
         "sortorder3": sort_order3}       
        let data;
-       await fetch('http://127.0.0.1:5000/sort_data',{
+       await fetch(Controller.url + '/sort_data',{
                method: 'POST',
                headers:{
                 'Content-Type': 'application/json',
