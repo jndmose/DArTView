@@ -63,7 +63,7 @@ def upload_file():
                 flash('File type not allowed', 'error')
                 return redirect("/base")
             #Secure the filename before storing it directly to the filesystem
-            #Append current date and time to the filename to make it unique
+            #geneate a unique filename by appending a random hex string
             
             filename = secure_filename(file.filename)
             new_filename= f'{filename.split(".")[0]}-{os.urandom(15).hex()}.csv'.replace(" ", "")
@@ -84,9 +84,8 @@ def upload_file():
             #print(first_column.loc[sample_meta_row+1:])
             #print("sample meta row is", first_column.iloc[sample_meta_row+2:20])
             # Use Marker id column to check the report type
-            dart_report_format = check_report_format(first_column.iloc[sample_meta_row+2:20])
-            
-            #print("dart report format is", dart_report_format)
+            dart_report_format = check_report_format(first_column.iloc[sample_meta_row+1:21])
+            print("dart report format is", dart_report_format)
             
            #subset with sample meta data
             sample_df= data.iloc[:sample_meta_row+1]
@@ -227,15 +226,14 @@ def check_report_format(first_column):
     
     #Check for silico DArT
     if  SNP_MARKER_IDENTIFIER not in marker_id_list[0]:
-        print("inside silico", marker_id_list[0])
-        return DarTReportFormat.SILICO_DART.value
+        return DarTReportFormat.SILICO_DART.name
     # else its a SNP check if 2 or 1 row format, Hapamap later
     else:
         filtered_marker_id_list= [marker_id.split(SNP_MARKER_IDENTIFIER)[0] for marker_id in  marker_id_list]
-        #print("filtered marker list", filtered_marker_id_list)
+        print("filtered marker list", filtered_marker_id_list)
         if len(filtered_marker_id_list) > len(set(filtered_marker_id_list)):
-            return DarTReportFormat.SNP_TWO_ROW.value
-        return DarTReportFormat.SNP_ONE_ROW.value
+            return DarTReportFormat.SNP_TWO_ROW.name
+        return DarTReportFormat.SNP_ONE_ROW.name
     
 def calculate_maf(genotypic_data, samples_number):
     ones = genotypic_data.apply(lambda x: x=='1').apply("sum", axis=1)
