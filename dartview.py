@@ -18,11 +18,12 @@ bp = Blueprint('dartview', __name__)
 
 
 #UPLOAD_FOLDER =constants.UPLOAD_FOLDER
-ALLOWED_EXTENSIONS = {'csv'}
+ALLOWED_EXTENSIONS = {'csv', 'txt', 'tsv', 'vcf'}
 ALLELE_ID= "AlleleID"
 SNP_MARKER_IDENTIFIER= '|'
 report_Mcall_rate= pd.Series()
 DART_HEADERS ='*'
+HAPMAP_GENOTYPIC_DATA_START= 11
 genotypic_data = pd.DataFrame()
 
 def allowed_file(filename):
@@ -70,84 +71,114 @@ def upload_file():
             
             session['filename'] = new_filename
             file.save(os.path.join(UPLOAD_FOLDER, new_filename))
-            data = pd.read_csv(os.path.join(UPLOAD_FOLDER, new_filename), dtype=str, header=None)
-            #Get first column
-            first_column = data.iloc[:,0]
-            
-            sample_meta_row =0
-            for val in first_column:
-                if val==DART_HEADERS:
-                    sample_meta_row+=1
-                else:
-                    break
-            #prinmt marker names
-            #print(first_column.loc[sample_meta_row+1:])
-            #print("sample meta row is", first_column.iloc[sample_meta_row+2:20])
-            # Use Marker id column to check the report type
-            dart_report_format = check_report_format(first_column.iloc[sample_meta_row+1:21])
-            print("Sample meta row is ", sample_meta_row)
-        
            
-        if dart_report_format == DarTReportFormat.SNP_ONE_ROW.name or dart_report_format == DarTReportFormat.SNP_TWO_ROW.name:
+             #check if the report format is hapmap
+            check_if_hapmap= check_hapmap_report_format()
+            # Set the report format based on the check
+            hapmap_report_format= DarTReportFormat.HAPMAP.name if check_if_hapmap else None
+            
+            if hapmap_report_format:
+                print("report format is hapmap")
+                data = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), header=None, sep='\t')
+                data_header = data.iloc[0]
+                
+                data= data[1:]
+            
+                data.columns= data_header
+                
+        
+                marker_list = data.iloc[:,0]
+                #print("marker list is", marker_list)
+                marker_metadata = data_header.iloc[0:HAPMAP_GENOTYPIC_DATA_START]
+                #print("marker metadata is", marker_metadata)
+           
+                genotypic_data= data.iloc[:, HAPMAP_GENOTYPIC_DATA_START:]
+                sample_list = genotypic_data.columns.tolist()
+
+                data = genotypic_data.to_numpy().tolist()
+                data.append(marker_list.to_numpy().tolist())
+                data.append(sample_list)
+                data.append(marker_metadata.to_numpy().tolist())
+        
+                json_data =  json.dumps(data)
+            
+
+                return json_data
+            # If not hapmap, check if its silico DArT or SNP 1 or 2 row
+            else:
+                data = pd.read_csv(os.path.join(UPLOAD_FOLDER, new_filename), dtype=str, header=None)
+            #Get first column
+                first_column = data.iloc[:,0]
+            
+                sample_meta_row =0
+                for val in first_column:
+                    if val==DART_HEADERS:
+                        sample_meta_row+=1
+                    else:
+                        break
+                dart_report_format = check_report_format(first_column.iloc[sample_meta_row+1:21])
+                print("report format is", dart_report_format)
+
             #subset with sample meta data
-            sample_df= data.iloc[:sample_meta_row+1]
-            first_row = sample_df.iloc[0]
-            print("first row is", first_row)
-            #get number of markers , subtract 1 to account for the header row
-            markers_number= len(first_column)-sample_meta_row-1
-            print("markers number is", markers_number)
+                sample_df= data.iloc[:sample_meta_row+1]
+                first_row = sample_df.iloc[0]
+                
+                #get number of markers , subtract 1 to account for the header row
+                markers_number= len(first_column)-sample_meta_row-1
+                print("markers number is", markers_number)
 
             
-            #remove *s from the sample_df
-            sample_meta_list = []
+                #remove *s from the sample_df
+                sample_meta_list = []
 
-            start_genotypic_col= 0
-            #Get start of genotypic data
-            for val in first_row:
-                if val == DART_HEADERS:
-                    start_genotypic_col +=1
-                else:
-                    break
+                start_genotypic_col= 0
+                #Get start of genotypic data
+                for val in first_row:
+                    if val == DART_HEADERS:
+                        start_genotypic_col +=1
+                    else:
+                        break
             #get the data with sample meta data
 
-            sample_df2 = sample_df.iloc[:, start_genotypic_col:]
+                sample_df2 = sample_df.iloc[:, start_genotypic_col:]
 
-            for row in sample_df2.iterrows():
-                sample_meta_list.append(row)
+                for row in sample_df2.iterrows():
+                    sample_meta_list.append(row)
             
 
-            samples_number= len(first_row)- start_genotypic_col
+                samples_number= len(first_row)- start_genotypic_col
             
-            allele_id_pos= sample_meta_row
+                allele_id_pos= sample_meta_row
 
-            #Remove all columns above the allele id position
-            data = data.iloc[allele_id_pos:,:]
+                #Remove all columns above the allele id position
+                data = data.iloc[allele_id_pos:,:]
 
-            #Assign first row as the header
-            data_header = data.iloc[0]
-            data= data[1:]
+                #Assign first row as the header
+                data_header = data.iloc[0]
+                data= data[1:]
             
-            data.columns= data_header
+                data.columns= data_header
         
-            marker_list = data.iloc[:,0]
-            marker_metadata = data_header.iloc[0:start_genotypic_col]
+                marker_list = data.iloc[:,0]
+                marker_metadata = data_header.iloc[0:start_genotypic_col]
            
-            genotypic_data= data.iloc[:, start_genotypic_col:]
-            if dart_report_format== DarTReportFormat.SNP_TWO_ROW.name:
-                # Convert two-row SNP to single-row SNP with the correct condition
-                combined_data = []
-                for i in range(0, genotypic_data.shape[0], 2):
-                    row1 = genotypic_data.iloc[i]
-                    row2 = genotypic_data.iloc[i + 1]
-                    combined_row = row1.combine(row2, lambda x, y: 
-                        '2' if x == '1' and y == '1' else
-                        '0' if x == '1' and y == '0' else
-                        '1' if x == '0' and y == '1' else
-                        '0' if x == '0' and y == '0' else
-                        '-'
-                    )
-                    combined_data.append(combined_row)
-                genotypic_data = pd.DataFrame(combined_data)
+                genotypic_data= data.iloc[:, start_genotypic_col:]
+                if dart_report_format== DarTReportFormat.SNP_TWO_ROW.name:
+                    # Convert two-row SNP to single-row SNP with the correct condition
+                    combined_data = []
+                    for i in range(0, genotypic_data.shape[0], 2):
+                        row1 = genotypic_data.iloc[i]
+                        row2 = genotypic_data.iloc[i + 1]
+                        combined_row = row1.combine(row2, lambda x, y: 
+                            '2' if x == '1' and y == '1' else
+                            '0' if x == '1' and y == '0' else
+                            '1' if x == '0' and y == '1' else
+                            '0' if x == '0' and y == '0' else
+                            '-'
+                        )
+                        combined_data.append(combined_row)
+                    genotypic_data = pd.DataFrame(combined_data)
+        
                 
                 
             
@@ -231,17 +262,17 @@ def upload_file():
             # result2 = result.to_json(orient="columns")
             # parsed= loads(result2)
             # print(dumps(parsed, indent=4))
-            sample_list = genotypic_data.columns.tolist()
-            
-            data = genotypic_data.to_numpy().tolist()
-            data.append(marker_list.to_numpy().tolist())
-            data.append(sample_list)
-            data.append(marker_metadata.to_numpy().tolist())
+                sample_list = genotypic_data.columns.tolist()
+
+                data = genotypic_data.to_numpy().tolist()
+                data.append(marker_list.to_numpy().tolist())
+                data.append(sample_list)
+                data.append(marker_metadata.to_numpy().tolist())
         
-            json_data =  json.dumps(data)
+                json_data =  json.dumps(data)
             
 
-            return json_data
+                return json_data
           
         
 
@@ -292,6 +323,17 @@ def sort_by_column(genotypic_data, column_name):
 def make_pretty(styler):
     styler.background_gradient(axis=None, vmin=1, vmax=5, cmap="YlGnBu")
     return styler
+
+def check_hapmap_report_format():
+    # Check if the report format is HapMap based on specific conditions
+    # Example condition: Check if the first row contains "rs#" (HapMap identifier)
+    try:
+        first_row = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), nrows=1, header=None, sep='\t').iloc[0]
+        #print("first row is \n", type(first_row))
+        return "rs#" in first_row.values
+    except Exception as e:
+        print(f"Error checking HapMap format: {e}")
+        return False
 
 
 
