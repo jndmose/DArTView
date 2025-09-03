@@ -12,3 +12,4 @@ export let cssVarStyles = writable([]);
 export let sample_list = writable([]);
 export let marker_list = writable([]);
 export let marker_metadata = writable([]);
+export let allele_ids = writable([]);

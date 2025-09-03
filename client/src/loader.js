@@ -3,7 +3,6 @@ import Spinner from './Spinner.svelte';
 let spinner_text = "Loading..."
 
 export const loader = (node, loading) => {
-	console.log(node.className)
 
 	if(node.className === "sort-spinner"){
 		spinner_text= "Sorting data..."

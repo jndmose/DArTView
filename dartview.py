@@ -85,6 +85,8 @@ def upload_file():
                 data= data[1:]
             
                 data.columns= data_header
+                alleles_ids = data["alleles"]
+                print("allele ids are", type(alleles_ids))
                 
         
                 marker_list = data.iloc[:,0]
@@ -96,9 +98,13 @@ def upload_file():
                 sample_list = genotypic_data.columns.tolist()
 
                 data = genotypic_data.to_numpy().tolist()
+               
                 data.append(marker_list.to_numpy().tolist())
                 data.append(sample_list)
                 data.append(marker_metadata.to_numpy().tolist())
+                
+                filtered_alleles = ["".join(allele.split("/")) for allele in   alleles_ids.to_numpy().tolist()]
+                data.append(filtered_alleles)
         
                 json_data =  json.dumps(data)
             
@@ -158,6 +164,7 @@ def upload_file():
                 data= data[1:]
             
                 data.columns= data_header
+               
         
                 marker_list = data.iloc[:,0]
                 marker_metadata = data_header.iloc[0:start_genotypic_col]
@@ -262,12 +269,16 @@ def upload_file():
             # result2 = result.to_json(orient="columns")
             # parsed= loads(result2)
             # print(dumps(parsed, indent=4))
+            
                 sample_list = genotypic_data.columns.tolist()
+                alleles_ids = []
 
                 data = genotypic_data.to_numpy().tolist()
+                
                 data.append(marker_list.to_numpy().tolist())
                 data.append(sample_list)
                 data.append(marker_metadata.to_numpy().tolist())
+                data.append(alleles_ids)
         
                 json_data =  json.dumps(data)
             

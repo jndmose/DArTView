@@ -2,7 +2,7 @@
 import VirtualList from './VirtualList.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
-import {geno_data, modal, sample_list, marker_list, marker_metadata} from './data.js';
+import {geno_data, modal, sample_list, marker_list, marker_metadata, allele_ids} from './data.js';
 import { onMount } from "svelte";
 
 import { loader } from './loader';
@@ -45,6 +45,12 @@ let styles = {
 
   
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));
+  if ($allele_ids.length===0){
+   console.log("No allele ids found this not hapmap file format");
+  }
+  else{
+   console.log("Allele IDs found", $allele_ids.length);
+  }
 
   const handleClickZoom = ((which) => {
    start1=0;
@@ -84,6 +90,7 @@ const markers = $geno_data.length;
 
 const samples = $geno_data[0].length;
 
+
 //width changes when zoom x is pressed
 const height=markers;
 
@@ -116,6 +123,26 @@ function hexToRGB(hex) {
   ];
 }
 
+function getScore(score, allele_id){
+  
+ if (score == allele_id){
+   return 2;
+ }
+ else if (score == 'NN'){
+   return '-';
+ }
+ else{
+   const [allele1, allele2] = allele_id;
+   if (allele1+allele2=== score){
+      return 0;
+   }
+   else{
+      return 1;
+   }
+ }
+
+}
+
 
 $: if (checkedX & checkedY || checkedY & !checkedX) {
    runUpdate(true);
@@ -146,6 +173,8 @@ if (canvas.getContext) {
 
   const imageData = ctx.createImageData(width, height);
   const data = imageData.data;
+
+  
 
   for (let j = 0; j < markers; j++) {
     for (let i = 0; i < samples; i++) {
@@ -257,11 +286,17 @@ const handleFilterData = () => {
 <VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item>
   
     <div class="row-data">
+      {#if $allele_ids.length ===0}
      {#each item as score , i}
       <span title="Sample: {$sample_list[i]}" class="allele{score} data">{score}</span>
       {/each}
 
-      
+      {:else}
+      {#each item as score , i}
+      {console.log("item is ", item)}
+      <span title="Sample: {$sample_list[i]}" class="allele{getScore(score,$allele_ids[i])} data">{score}</span>
+      {/each}
+      {/if}
    </div>
    
    

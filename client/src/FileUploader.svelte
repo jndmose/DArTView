@@ -23,7 +23,7 @@
 		loading.update(n => n=val);
 	}
 	import Controller from './Controller.js';
-  import {geno_data,sample_list,marker_list, marker_metadata} from './data.js';
+  import {geno_data,sample_list,marker_list, marker_metadata, allele_ids} from './data.js';
    const controller = new Controller();
 
    import { Styles } from 'sveltestrap';
@@ -52,9 +52,11 @@
 	}
   else{
     runUpdate(false);
+    $allele_ids= $geno_data.pop();
     $marker_metadata= $geno_data.pop();
     $sample_list = $geno_data.pop();
     $marker_list= $geno_data.pop();
+
 
   }
 
