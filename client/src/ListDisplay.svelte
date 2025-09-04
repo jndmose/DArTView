@@ -13,6 +13,7 @@ import canvasSize from 'canvas-size';
 // let start;
 // let end;
 let start1;
+let count = -1;
 let end1;
 let start2;
 let end2;
@@ -45,12 +46,6 @@ let styles = {
 
   
   const sortData = () => modal.set(bind(Sort, {metadata:mtdata}));
-  if ($allele_ids.length===0){
-   console.log("No allele ids found this not hapmap file format");
-  }
-  else{
-   console.log("Allele IDs found", $allele_ids.length);
-  }
 
   const handleClickZoom = ((which) => {
    start1=0;
@@ -124,6 +119,7 @@ function hexToRGB(hex) {
 }
 
 function getScore(score, allele_id){
+   console.log("score is ", score, " allele id is ", allele_id);
   
  if (score == allele_id){
    return 2;
@@ -133,10 +129,10 @@ function getScore(score, allele_id){
  }
  else{
    const [allele1, allele2] = allele_id;
-   if (allele1+allele2=== score){
+   if (allele1+allele1=== score){
       return 0;
    }
-   else{
+   else if (allele2+allele2=== score){
       return 1;
    }
  }
@@ -283,8 +279,7 @@ const handleFilterData = () => {
      {/if}
      
 {#if !checkedX & !checkedY }
-<VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item>
-  
+<VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item let:index>
     <div class="row-data">
       {#if $allele_ids.length ===0}
      {#each item as score , i}
@@ -292,10 +287,9 @@ const handleFilterData = () => {
       {/each}
 
       {:else}
-      {#each item as score , i}
-      {console.log("item is ", item)}
-      <span title="Sample: {$sample_list[i]}" class="allele{getScore(score,$allele_ids[i])} data">{score}</span>
-      {/each}
+      {#each item as score, i}
+  <span title="Sample: {$sample_list[i]}" class="allele{getScore(score, $allele_ids[index])} data">{score}</span>
+{/each}
       {/if}
    </div>
    
