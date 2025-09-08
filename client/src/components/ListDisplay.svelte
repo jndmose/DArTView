@@ -169,11 +169,14 @@ if (canvas.getContext) {
   const imageData = ctx.createImageData(width, height);
   const data = imageData.data;
 
-  
+  let test_if_hapmap = $allele_ids.length > 0 ? true : false;
 
   for (let j = 0; j < markers; j++) {
     for (let i = 0; i < samples; i++) {
-      const allele = $geno_data[j][i] ?? "-";
+      let allele = $geno_data[j][i] ?? "-";
+      if (test_if_hapmap) {
+         allele = getScore(allele, $allele_ids[j]);
+      }
       const color = alleleMap[allele] || alleleMap["-"];
 
       for (let dx = 0; dx < blockWidth; dx++) {
@@ -276,15 +279,16 @@ const handleFilterData = () => {
      
      </VirtualList>
        {:else}
-       <VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item let:index>
+       <VirtualList  items= {$geno_data} bind:start={start1} bind:end={end1} let:item let:index>
          <div class="row-data" style="border-bottom: none;">
             {#each item as score}
         <span  class="allele{getScore(score, $allele_ids[index])} data" style="min-width:2px;"></span>
       {/each}
          </div>
       </VirtualList>
-     <div class="footer"><p>Showing {start1}-{end1} of {$geno_data.length} Markers</p></div>
+     
      {/if}
+     <div class="footer"><p>Showing {start1}-{end1} of {$geno_data.length} Markers</p></div>
      {/if}
      
 {#if !checkedX & !checkedY }
