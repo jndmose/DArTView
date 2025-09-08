@@ -1,5 +1,5 @@
 <script>
-   import VirtualList from './VirtualList.svelte';
+   import VirtualList from './components/VirtualList.svelte';
     let data=[];
     let sampleNumber=0;
     let hasError=false;

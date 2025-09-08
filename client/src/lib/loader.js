@@ -1,5 +1,5 @@
 import { onDestroy } from 'svelte';
-import Spinner from './Spinner.svelte';
+import Spinner from '../components/Spinner.svelte';
 let spinner_text = "Loading..."
 
 export const loader = (node, loading) => {

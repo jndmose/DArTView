@@ -14,7 +14,7 @@
     DropdownItem
   } from 'sveltestrap';
   
-	import { loader } from './loader';
+	import { loader } from '../lib/loader';
   import { writable  }from 'svelte/store';
 	let loading = writable(false);
   let loading_value= "Loading data..."
@@ -22,8 +22,8 @@
 	function runUpdate(val) {
 		loading.update(n => n=val);
 	}
-	import Controller from './Controller.js';
-  import {geno_data,sample_list,marker_list, marker_metadata, allele_ids} from './data.js';
+	import Controller from '../lib/Controller.js';
+  import {geno_data,sample_list,marker_list, marker_metadata, allele_ids} from '../lib/data.js';
    const controller = new Controller();
 
    import { Styles } from 'sveltestrap';

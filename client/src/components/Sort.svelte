@@ -1,9 +1,9 @@
 
 <script>
-  import Controller from './Controller.js';
-  import{geno_data, modal, selected1,selected2, sort_order1, sort_order2,selected3,sort_order3} from './data.js';
+  import Controller from '../lib/Controller.js';
+  import{geno_data, modal, selected1,selected2, sort_order1, sort_order2,selected3,sort_order3} from '../lib/data.js';
   import {createEventDispatcher} from 'svelte';
-  import { loader } from './loader';
+  import { loader } from '../lib/loader.js';
   import { writable  }from 'svelte/store';
   
   const controller = new Controller();

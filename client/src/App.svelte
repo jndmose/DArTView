@@ -1,5 +1,5 @@
 <script>
-	import FileUpload from './FileUploader.svelte';
+	import FileUpload from './components/FileUploader.svelte';
 	import Form from './Form.svelte';
 	
 </script>

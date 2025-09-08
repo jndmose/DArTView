@@ -2,10 +2,10 @@
 import VirtualList from './VirtualList.svelte';
 import Modal, { bind } from 'svelte-simple-modal';
 import Sort from './Sort.svelte';
-import {geno_data, modal, sample_list, marker_list, marker_metadata, allele_ids} from './data.js';
+import {geno_data, modal, sample_list, marker_list, marker_metadata, allele_ids} from '../lib/data.js';
 import { onMount } from "svelte";
 
-import { loader } from './loader';
+import { loader } from '../lib/loader';
 import { writable  }from 'svelte/store';
 import canvasSize from 'canvas-size';
 
@@ -119,7 +119,6 @@ function hexToRGB(hex) {
 }
 
 function getScore(score, allele_id){
-   console.log("score is ", score, " allele id is ", allele_id);
   
  if (score == allele_id){
    return 2;
@@ -265,6 +264,7 @@ const handleFilterData = () => {
 </div>
 
     {#if checkedX & !checkedY}
+    {#if $allele_ids.length ===0}
     <VirtualList  items= {$geno_data} bind:start={start1} bind:end={end1} let:item>
       <div class="row-data" style="border-bottom: none;">
        {#each item as score}
@@ -275,34 +275,43 @@ const handleFilterData = () => {
      </div>
      
      </VirtualList>
+       {:else}
+       <VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item let:index>
+         <div class="row-data" style="border-bottom: none;">
+            {#each item as score}
+        <span  class="allele{getScore(score, $allele_ids[index])} data" style="min-width:2px;"></span>
+      {/each}
+         </div>
+      </VirtualList>
      <div class="footer"><p>Showing {start1}-{end1} of {$geno_data.length} Markers</p></div>
+     {/if}
      {/if}
      
 {#if !checkedX & !checkedY }
-<VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item let:index>
+{#if $allele_ids.length ===0}
+<VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item>
     <div class="row-data">
-      {#if $allele_ids.length ===0}
+   
      {#each item as score , i}
       <span title="Sample: {$sample_list[i]}" class="allele{score} data">{score}</span>
       {/each}
+      </div>
+</VirtualList>
 
       {:else}
+<VirtualList  items= {$geno_data} bind:start={start2} bind:end={end2} let:item let:index>
+   <div class="row-data">
       {#each item as score, i}
   <span title="Sample: {$sample_list[i]}" class="allele{getScore(score, $allele_ids[index])} data">{score}</span>
 {/each}
-      {/if}
    </div>
-   
-   
-   </VirtualList>
+</VirtualList>
+      {/if}
    
    <div class="footer"><p>Showing {start2}-{end2} of {$geno_data.length} Markers</p></div>
    {/if}
    
     </div>
-
-   
-   
 
    <style>
 
