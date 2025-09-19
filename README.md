@@ -18,8 +18,11 @@ The instant recalculation also enables the user get rid of monomorphic markers u
 
 ## Run as a docker container
 
-docker build -t dartview .   
-docker run  -d  -p 3000:3000 dartview 
+`docker build -t dartview .`   
+`docker run  -d  -p 3000:3000 dartview`   
+Test it on  http://localhost:3000
+
+
 
 
 ## Screenshots
