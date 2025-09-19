@@ -16,10 +16,10 @@ It offers a novel approach for gaining insights from genotypic data through sort
 The metadata statistical recalculations enables the user to quickly know how many markers they are loosing based on a metadata filtering criteria.
 The instant recalculation also enables the user get rid of monomorphic markers upon filtering.
 
-## Try out DArTView
+## Run as a docker container
 
-Try the test version of DArTView. Still under active development to add features
-https://dartview.seqart.net
+docker build -t dartview .
+docker run  -d  -p 3000:3000 dartview 
 
 ## Screenshots
 ![DArTView GUI](https://github.com/jndmose/DArTView/blob/main/client/public/images/un-checked.png?raw=true)
