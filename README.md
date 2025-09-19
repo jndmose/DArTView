@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/jndmose/DArTView/refs/heads/main/client/public/images/snp-64.png" width="64">
+<img src="https://raw.githubusercontent.com/jndmose/DArTView/refs/heads/main/client/public/images/snp-64.old.png" width="64">
 
 <hr />
 
@@ -18,8 +18,9 @@ The instant recalculation also enables the user get rid of monomorphic markers u
 
 ## Run as a docker container
 
-docker build -t dartview .
+docker build -t dartview .   
 docker run  -d  -p 3000:3000 dartview 
+
 
 ## Screenshots
 ![DArTView GUI](https://github.com/jndmose/DArTView/blob/main/client/public/images/un-checked.png?raw=true)
