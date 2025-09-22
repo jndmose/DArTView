@@ -19,7 +19,8 @@ The instant recalculation also enables the user get rid of monomorphic markers u
 
 ## Acknowledgements
 
-The original concept and an earlier Java-based implementation of DArTView was developed by [Diversity Arrays](https://www.diversityarrays.com/).  
+The original concept and an earlier Java-based implementation of DArTView was developed by <a href="https://www.diversityarrays.com/" style="text-decoration:none" target="_blank">Diversity Arrays Technology</a>
+.  
 The Java version was coded by **Andrew Kowalczyk** and **Brian Pearce** of Diversity Arrays Technology.  
 
 This project builds upon their pioneering work, reimagined here as a modern web application. Any changes, omissions, or additions are the responsibility of the current authors.
