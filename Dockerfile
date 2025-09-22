@@ -18,9 +18,9 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system deps for numpy/pandas, then clean up
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     build-essential \
+#     && rm -rf /var/lib/apt/lists/*
 
 # ------------------------
 # Setup Python venv
