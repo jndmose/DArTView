@@ -4,8 +4,9 @@
 
 **Table of contents:**
 - [About DArTView](#about-dartview)
-- [Installation](#installation)
-- [Try out DArTView](#try-out-dartview)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+- [Run as a Docker container](#run-as-a-docker-container)
 - [Screenshots](#screenshots)
 
 ## About DArTView
@@ -15,6 +16,17 @@ It offers a novel approach for gaining insights from genotypic data through sort
 
 The metadata statistical recalculations enables the user to quickly know how many markers they are loosing based on a metadata filtering criteria.
 The instant recalculation also enables the user get rid of monomorphic markers upon filtering.
+
+## Acknowledgements
+
+The original concept and an earlier Java-based implementation of DArTView was developed by [Diversity Arrays](https://www.diversityarrays.com/).  
+The Java version was coded by **Andrew Kowalczyk** and **Brian Pearce** of Diversity Arrays Technology.  
+
+This project builds upon their pioneering work, reimagined here as a modern web application. Any changes, omissions, or additions are the responsibility of the current authors.
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Run as a docker container
 
