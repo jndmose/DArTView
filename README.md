@@ -30,9 +30,10 @@ This project builds upon their pioneering work, reimagined here as a modern web 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Run as a docker container
-
-`docker build -t dartview .`   
-`docker run  -d  -p 3000:3000 dartview`   
+`$ git clone https://github.com/jndmose/DArTView.git`   
+`$ cd DArTView`   
+`$ docker build -t dartview .`   
+`$ docker run  -d  -p 3000:3000 dartview`   
 Test it on  http://localhost:3000
 
 
