@@ -24,6 +24,7 @@ SNP_MARKER_IDENTIFIER= '|'
 report_Mcall_rate= pd.Series()
 DART_HEADERS ='*'
 HAPMAP_GENOTYPIC_DATA_START= 11
+HAPMAP_IDENTIFIER= "rs#"
 genotypic_data = pd.DataFrame()
 
 def allowed_file(filename):
@@ -70,7 +71,11 @@ def upload_file():
             new_filename= f'{filename.split(".")[0]}-{os.urandom(15).hex()}.csv'.replace(" ", "")
             
             session['filename'] = new_filename
-            file.save(os.path.join(UPLOAD_FOLDER, new_filename))
+            try:
+                file.save(os.path.join(UPLOAD_FOLDER, new_filename))
+            except Exception as e:
+                flash(f"Error saving file: {e}", 'error')
+                return redirect(request.url)
            
              #check if the report format is hapmap
             check_if_hapmap= check_hapmap_report_format()
@@ -79,15 +84,17 @@ def upload_file():
             
             if hapmap_report_format:
                 print("report format is hapmap")
-                data = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), header=None, sep='\t')
+                try:
+                    data = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), header=None, sep='\t')
+                except Exception as e:
+                    flash(f"Error reading HapMap file: {e}", 'error')
+                    return redirect(request.url)
+
                 data_header = data.iloc[0]
-                
                 data= data[1:]
             
                 data.columns= data_header
-                alleles_ids = data["alleles"]
-                print("allele ids are", type(alleles_ids))
-                
+                alleles_ids = data["alleles"]                
         
                 marker_list = data.iloc[:,0]
                 #print("marker list is", marker_list)
@@ -95,6 +102,10 @@ def upload_file():
                 #print("marker metadata is", marker_metadata)
            
                 genotypic_data= data.iloc[:, HAPMAP_GENOTYPIC_DATA_START:]
+                samples_number = len(data_header) - HAPMAP_GENOTYPIC_DATA_START
+                
+                MAF= calculate_maf(genotypic_data, samples_number,hapmap_report_format, alleles_ids)
+                print("MAF values are", MAF)
                 sample_list = genotypic_data.columns.tolist()
 
                 data = genotypic_data.to_numpy().tolist()
@@ -246,7 +257,8 @@ def upload_file():
             #return  genotypic_data.to_json(orient='records')
             #return redirect(url_for('display_data'))
 
-            #MAF= calculate_maf(genotypic_data, samples_number)
+            
+            
 
             #genotypic_data.to_csv(path_or_buf=os.path.join("/home/moses/flask/flask-tables/templates", "genoptype.csv"),na_rep="-", index=False)
             #return render_template('genotypic_table.html')
@@ -269,6 +281,8 @@ def upload_file():
             # result2 = result.to_json(orient="columns")
             # parsed= loads(result2)
             # print(dumps(parsed, indent=4))
+                MAF= calculate_maf(genotypic_data, samples_number)
+                print("MAF values are", MAF)
             
                 sample_list = genotypic_data.columns.tolist()
                 alleles_ids = []
@@ -310,21 +324,31 @@ def check_report_format(first_column):
             return DarTReportFormat.SNP_TWO_ROW.name
         return DarTReportFormat.SNP_ONE_ROW.name
     
-def calculate_maf(genotypic_data, samples_number):
-    ones = genotypic_data.apply(lambda x: x=='1').apply("sum", axis=1)
-    ones.index= range(len(ones))
+def calculate_maf(genotypic_data, samples_number, is_hapamap_report_format=False, allele_ids=None):
+    
+    #Calculate the minor allele frequency
+    if is_hapamap_report_format:
+        genotypic_data = hapmap_to_binary(genotypic_data, allele_ids)
             
-    zeros = genotypic_data.apply(lambda x: x=='0', axis=1).apply("sum", axis=1)
-    zeros.index= range(len(zeros))
-    twos = genotypic_data.apply(lambda x: x=='2', axis=1).apply("sum", axis=1)
-    twos.index= range(len(twos))
-    NAs = genotypic_data.apply(lambda x: x.isna(), axis=1).apply("sum", axis=1)
-    NAs.index= range(len(NAs))
-        
+    hom1Count = genotypic_data.apply(lambda x: x=='0', axis=1).apply("sum", axis=1)
+    hom1Count.index= range(len(hom1Count))
+    hom2Count = genotypic_data.apply(lambda x: x=='1').apply("sum", axis=1)
+    hom2Count.index= range(len(hom2Count))
+    
+    hetCount = genotypic_data.apply(lambda x: x=='2', axis=1).apply("sum", axis=1)
+    hetCount.index= range(len(hetCount))
+    
     MAF = []
-    for i in range(len(ones)):
-        MAF.append(np.sort([ones[i], zeros[i], twos[i]])[1]/(samples_number - NAs[i]))
+    for i in range(len(hom1Count)):
+        if hom1Count[i] < hom2Count[i]:
+            maf_value = float((2 * hom1Count[i] + hetCount[i]) / (2 * samples_number))
+        else:
+            maf_value = float((2 * hom2Count[i] + hetCount[i]) / (2 * samples_number))
+        MAF.append(maf_value)
     return MAF
+    
+        
+   
 
 def sort_by_column(genotypic_data, column_name):
     return genotypic_data.sort_values(by=[column_name])
@@ -341,10 +365,40 @@ def check_hapmap_report_format():
     try:
         first_row = pd.read_csv(os.path.join(UPLOAD_FOLDER, session['filename']), nrows=1, header=None, sep='\t').iloc[0]
         #print("first row is \n", type(first_row))
-        return "rs#" in first_row.values
+        return HAPMAP_IDENTIFIER in first_row.values
     except Exception as e:
         print(f"Error checking HapMap format: {e}")
         return False
+
+def hapmap_to_binary(genotypic_data, allele_ids):
+    """
+    Convert HapMap genotypic data to binary format (0, 1, 2).
+    0: Homozygous for the first allele
+    1: Homozygous for second allele
+    2: Heterozygous
+    -: Missing data
+    """
+    # Reset indices to ensure uniqueness
+    #genotypic_data = genotypic_data.reset_index(drop=True)
+    #allele_ids = allele_ids.reset_index(drop=True)
+
+    binary_data = []
+    for index, row in genotypic_data.iterrows():
+        allele_id = allele_ids[index][-3:]  # Get the last three characters of the allele ID
+        allele_id = allele_id.split('/')
+        allele1, allele2 = allele_id[0], allele_id[1]
+        
+        binary_row = row.apply(lambda x: 
+            '0' if x == allele1 + allele1 else
+            '1' if x == allele2 + allele2 else
+            '2' if x == allele1 + allele2 or x == allele2 + allele1 else
+            '-'
+        )
+        binary_data.append(binary_row)
+        
+
+    # Return the binary DataFrame
+    return pd.DataFrame(binary_data, columns=genotypic_data.columns)
 
 
 
